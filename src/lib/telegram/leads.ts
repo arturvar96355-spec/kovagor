@@ -1,4 +1,4 @@
-import { esc } from './api'
+import { TelegramError, esc } from './api'
 import { makeStartParam } from './link'
 import type { Deps } from './bot'
 
@@ -28,6 +28,8 @@ export async function submitLead(deps: Deps, input: LeadInput): Promise<{ id: nu
     store.createThread({ topic_id: topic.message_thread_id, lead_id: lead.id, client_chat_id: null, client_name: lead.name })
     await api.call('sendMessage', { chat_id: config.groupId, message_thread_id: topic.message_thread_id, text: card, parse_mode: 'HTML' })
   } catch (e) {
+    // Telegram недоступен целиком (сеть/блокировка) — повторная отправка бессмысленна и только задержит ответ формы
+    if (e instanceof TelegramError && e.code === 0) throw e
     console.error('[telegram] не удалось создать тему, шлём в общий чат', e)
     await api.call('sendMessage', { chat_id: config.groupId, text: card, parse_mode: 'HTML' })
   }

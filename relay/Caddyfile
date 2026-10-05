@@ -1,0 +1,35 @@
+# Ретранслятор Telegram для зарубежного сервера.
+# Российский сервер не достучится до api.telegram.org, поэтому весь обмен идёт через этот узел:
+#   сайт  ──(/bot…)──>  ретранслятор  ──>  api.telegram.org
+#   Telegram ──(/hook)──>  ретранслятор  ──>  сайт (/api/telegram)
+{$RELAY_DOMAIN} {
+	encode zstd gzip
+
+	# 1) Вызовы Bot API от сайта: пускаем только IP вашего российского сервера, чужим ретранслятор не нужен
+	@botapi {
+		path /bot*
+		remote_ip {$SITE_SERVER_IP}
+	}
+	handle @botapi {
+		reverse_proxy https://api.telegram.org {
+			header_up Host api.telegram.org
+		}
+	}
+
+	# 2) Вебхуки Telegram → сайт: только с верным секретным заголовком (его задаёт setWebhook)
+	@hook {
+		path /hook
+		header X-Telegram-Bot-Api-Secret-Token {$WEBHOOK_SECRET}
+	}
+	handle @hook {
+		rewrite * /api/telegram
+		reverse_proxy https://{$SITE_DOMAIN} {
+			header_up Host {$SITE_DOMAIN}
+		}
+	}
+
+	# всё остальное — пустая страница
+	handle {
+		respond "ok" 200
+	}
+}

@@ -43,6 +43,13 @@ bash scripts/deploy.sh           # собирает и запускает сай
 Когда `deploy.sh` закончит, сайт откроется на https://kovagor.ru (сертификат Caddy выпускает сам, если DNS уже указывает на сервер; иначе он повторит попытку, когда DNS обновится: смотрите `docker compose logs -f caddy`).
 
 ## 5. Подключить Telegram-бота
+**Сначала проверьте, достаёт ли сервер до Telegram:**
+```bash
+curl -m 10 -sS -o /dev/null -w "telegram: %{http_code}\n" https://api.telegram.org/
+```
+Если выводится `telegram: 000` (таймаут) — Telegram с этого сервера закрыт; пропустите команду ниже и сделайте ретранслятор: `docs/TELEGRAM.md`, раздел «Если сервер в России и Telegram недоступен». Заявки в любом случае можно получать на email: `bash scripts/set-mail.sh`.
+
+Если код `200`/`302` — подключаем бота напрямую:
 ```bash
 bash scripts/set-webhook.sh
 ```

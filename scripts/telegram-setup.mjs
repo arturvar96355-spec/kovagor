@@ -6,7 +6,7 @@ const group = Number(process.env.TELEGRAM_GROUP_ID)
 const secret = process.env.TELEGRAM_WEBHOOK_SECRET
 const username = process.env.TELEGRAM_BOT_USERNAME?.replace(/^@/, '')
 const arg = process.argv[2]
-const base = process.env.TELEGRAM_API_BASE ?? 'https://api.telegram.org'
+const base = (process.env.TELEGRAM_API_BASE ?? 'https://api.telegram.org').replace(/\/$/, '')
 
 if (!token) {
   console.error('Не задан TELEGRAM_BOT_TOKEN в .env')
@@ -67,7 +67,8 @@ if (process.exitCode) {
 }
 
 if (arg?.startsWith('http')) {
-  const url = `${arg.replace(/\/$/, '')}/api/telegram`
+  // за ретранслятором вебхук принимает он (TELEGRAM_WEBHOOK_URL), иначе — сам сайт
+  const url = process.env.TELEGRAM_WEBHOOK_URL ?? `${arg.replace(/\/$/, '')}/api/telegram`
   await call('setWebhook', { url, secret_token: secret, allowed_updates: ['message'] })
   await call('setMyCommands', { commands: [{ command: 'start', description: 'Начать переписку' }] })
   const info = await call('getWebhookInfo')
