@@ -1,4 +1,5 @@
 import { Header } from '@/components/layout-header'
+import { GlobalScene } from '@/components/three/global-scene'
 import { Hero } from '@/components/sections/hero'
 import { Manifesto } from '@/components/sections/manifesto'
 import { Marquee } from '@/components/motion/marquee'
@@ -14,6 +15,7 @@ export default function Home() {
   return (
     <>
       <Header />
+      <GlobalScene />
       <main id="top">
         <Hero />
         <Manifesto />

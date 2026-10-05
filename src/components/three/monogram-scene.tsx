@@ -1,14 +1,16 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, Lightformer } from '@react-three/drei'
+import { Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
 import * as THREE from 'three'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
 import { MONOGRAM_PATHS } from '@/components/brand-paths'
-import { heroScene } from './state'
+import { pose, sceneInput } from './state'
 
-const WIDTH = 2.5 // ширина монограммы в единицах сцены
+const WIDTH = 2.5 // ширина монограммы в единицах сцены при s = 1
+const INK = new THREE.Color('#1b1b19')
+const IVORY = new THREE.Color('#e9e4d8')
 
 /** Экструзия контуров KVG из SVG в объёмную геометрию с фаской. */
 function buildGeometry() {
@@ -20,11 +22,11 @@ function buildGeometry() {
   }
   const geo = new THREE.ExtrudeGeometry(shapes, {
     depth: 70,
-    curveSegments: 28,
+    curveSegments: 20,
     bevelEnabled: true,
     bevelThickness: 7,
     bevelSize: 4,
-    bevelSegments: 5,
+    bevelSegments: 4,
   })
   geo.computeBoundingBox()
   const box = geo.boundingBox!
@@ -50,50 +52,67 @@ function buildGeometry() {
 }
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t))
+const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 
 function Monogram() {
   const group = useRef<THREE.Group>(null)
+  const mat = useRef<THREE.MeshPhysicalMaterial>(null)
+  const spin = useRef(0) // инерционный довесок вращения от скорости скролла
   const geometry = useMemo(() => buildGeometry(), [])
 
   useFrame((state, dt) => {
     const g = group.current
     if (!g) return
-    const now = performance.now() / 1000
-    const intro = easeOutExpo(Math.min(Math.max((now - heroScene.startAt) / 2.2, 0), 1))
-    const p = heroScene.progress
-
-    // курсор → мягкий наклон с инерцией
-    const k = 1 - Math.pow(0.001, dt)
-    const sway = Math.sin(state.clock.elapsedTime * 0.55) * 0.22 // постоянный лёгкий дрейф: блики скользят по граням
-    const ty = heroScene.px * 0.45 + sway + (1 - intro) * -1.1 + p * Math.PI * 0.9
-    const tx = -heroScene.py * 0.28
-    g.rotation.y += (ty - g.rotation.y) * k
-    g.rotation.x += (tx - g.rotation.x) * k
-
     const t = state.clock.elapsedTime
-    g.position.y = Math.sin(t * 0.8) * 0.06 + p * 1.4
-    const sc = (0.72 + 0.28 * intro) * (1 - p * 0.35)
-    g.scale.setScalar(sc)
+    const now = performance.now() / 1000
+    const intro = easeOutExpo(clamp((now - sceneInput.startAt) / 2.2, 0, 1))
+    const k = 1 - Math.pow(0.001, dt) // коэффициент сглаживания, не зависящий от FPS
+
+    // скролл «раскручивает» монограмму, трение возвращает её обратно
+    spin.current += (clamp(sceneInput.vel / 4000, -1.2, 1.2) - spin.current) * (1 - Math.pow(0.02, dt))
+
+    const sway = Math.sin(t * 0.55) * 0.22 // постоянный дрейф: блики скользят по граням
+    const targetY = pose.ry + sceneInput.px * 0.4 + sway + (1 - intro) * -1.1 + spin.current * 0.9
+    const targetX = pose.rx - sceneInput.py * 0.25 + spin.current * 0.25
+    g.rotation.y += (targetY - g.rotation.y) * k
+    g.rotation.x += (targetX - g.rotation.x) * k
+
+    // позиция: поза задаёт долю половины видимой области на плоскости z=0
+    const v = state.viewport
+    const tx = pose.x * (v.width / 2) * 0.92
+    const ty = pose.y * (v.height / 2) * 0.92 + Math.sin(t * 0.8) * 0.06
+    g.position.x += (tx - g.position.x) * k
+    g.position.y += (ty - g.position.y) * k
+
+    // масштаб привязан к высоте экрана, чтобы композиция не «плыла» при ресайзе
+    const base = clamp(v.height / 4.01, 0.7, 1.4)
+    const sc = pose.s * base * (0.72 + 0.28 * intro)
+    g.scale.setScalar(g.scale.x + (sc - g.scale.x) * k)
+
+    if (mat.current) mat.current.color.lerpColors(INK, IVORY, pose.tone)
   })
 
   return (
     <group ref={group}>
       <mesh geometry={geometry}>
-        <meshPhysicalMaterial color="#1b1b19" roughness={0.32} metalness={0.55} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={1.7} />
+        <meshPhysicalMaterial ref={mat} color="#1b1b19" roughness={0.32} metalness={0.55} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={1.7} />
       </mesh>
     </group>
   )
 }
 
 export default function MonogramScene({ active, onReady }: { active: boolean; onReady: () => void }) {
+  const [dpr, setDpr] = useState(1.5)
   return (
     <Canvas
-      dpr={[1, 2]}
+      dpr={dpr}
       frameloop={active ? 'always' : 'never'}
       camera={{ position: [0, 0, 7], fov: 32 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       onCreated={onReady}
     >
+      {/* слабое устройство → снижаем разрешение рендера, мощное → поднимаем */}
+      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(2)} />
       <ambientLight intensity={0.35} />
       <directionalLight position={[3, 4, 5]} intensity={1.1} />
       <Environment resolution={256}>

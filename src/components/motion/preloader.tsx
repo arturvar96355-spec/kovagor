@@ -7,6 +7,15 @@ import { Monogram } from '@/components/brand'
 
 export const PRELOAD_KEY = 'kv-preloaded'
 
+/** Сколько секунд сцены главной ждут окончания заставки (0, если она уже показывалась). */
+export function preloadDelay(): number {
+  try {
+    return sessionStorage.getItem(PRELOAD_KEY) === '1' ? 0 : 1.6
+  } catch {
+    return 0
+  }
+}
+
 /** Короткая заставка с монограммой: показывается раз за сессию, пропускается при reduced-motion. */
 export function Preloader() {
   const root = useRef<HTMLDivElement>(null)
