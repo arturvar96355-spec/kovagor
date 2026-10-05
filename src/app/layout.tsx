@@ -4,6 +4,7 @@ import { SmoothScroll } from '@/components/motion/smooth-scroll'
 import { Analytics } from '@/components/analytics'
 import { Cursor } from '@/components/motion/cursor'
 import { Preloader } from '@/components/motion/preloader'
+import { PageCurtain } from '@/components/motion/page-curtain'
 import './globals.css'
 
 const display = Cormorant_Garamond({
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#top" className="skip-link">К содержимому</a>
         <Analytics />
         <Preloader />
+        <PageCurtain />
         <Cursor />
         <SmoothScroll />
         {children}

@@ -45,6 +45,12 @@ export function Hero() {
       </div>
 
       <div className="relative z-10 flex flex-wrap items-end justify-between gap-8">
+        <div aria-hidden data-hero-fade className="pointer-events-none absolute -top-24 left-0 hidden items-center gap-3 text-[10px] uppercase tracking-[0.35em] text-mute md:flex">
+          <span className="relative block h-12 w-px overflow-hidden bg-line">
+            <span className="scroll-cue absolute inset-x-0 top-0 h-1/2 bg-ink" />
+          </span>
+          Листайте
+        </div>
         <p data-hero-fade className="max-w-md text-lg leading-relaxed text-ink-2">
           Дизайн, анимации и разработка в одной команде. От идеи до запуска — без посредников.
         </p>

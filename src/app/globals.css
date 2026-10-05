@@ -51,3 +51,7 @@ html[data-preloading] header { opacity: 0; }
 /* лёгкое «зерно» поверх страницы: бумажная фактура, почти незаметна */
 body::after { content: ""; position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: .05; mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+
+.scroll-cue { animation: scroll-cue 2.2s cubic-bezier(.65,0,.35,1) infinite; }
+@keyframes scroll-cue { 0% { transform: translateY(-100%) } 60%, 100% { transform: translateY(220%) } }
+@media (prefers-reduced-motion: reduce) { .scroll-cue { animation: none } }

@@ -11,11 +11,12 @@ Next.js 16 (App Router, Turbopack) · React 19 · TypeScript · Tailwind v4 · G
 
 ## Структура
 - `src/app` — страницы, `api/lead` (приём заявок), `api/telegram` (вебхук бота), OG/иконки.
-- `src/components/motion` — анимационные примитивы (SplitReveal, Reveal, Magnetic, TiltCard, Marquee, Cursor, Preloader, SmoothScroll, SectionHead).
+- `src/components/motion` — анимационные примитивы (SplitReveal, Reveal, Magnetic, TiltCard, Marquee, Cursor, Preloader, PageCurtain, SmoothScroll, SectionHead, useSpotlight).
 - `src/components/three` — единая WebGL-сцена: `poses.ts` (поза монограммы по секциям), `bind-poses.ts` (ScrollTrigger), `monogram-scene.tsx`.
 - `src/components/sections` — секции главной; `src/content` — весь текст/данные (тарифы, FAQ, проекты, процесс).
 - `src/lib/telegram` — бот (заявки → темы группы, переписка менеджер ↔ клиент), `leads-delivery.ts` (Telegram + email параллельно), `consent-log.ts` (журнал согласий 152-ФЗ).
-- `docs/` — ANALYSIS (анализ пакета), CLIENT_PLAYBOOK, LEGAL_CHECKLIST, TELEGRAM, DEPLOY.
+- `src/content/legal.ts` — реквизиты оператора и версии документов (единый источник для политики, согласия, футера).
+- `docs/` — ANALYSIS (анализ пакета), CLIENT_PLAYBOOK, LEGAL_CHECKLIST, LEGAL_RESEARCH, TELEGRAM, DEPLOY.
 
 ## Правила анимаций (обязательные)
 1. **GSAP — скролл-сцены и тексты, Motion — интерфейс и переходы**; не смешивать на одном элементе.
@@ -30,7 +31,8 @@ Next.js 16 (App Router, Turbopack) · React 19 · TypeScript · Tailwind v4 · G
 ## Контент и честность
 - Нет выдуманных фактов, цифр, отзывов, клиентов. Неизвестное — `TODO(content)`; юридическое — `TODO(legal)` (`grep -rn "TODO(" src`).
 - Тон: прямой, без «комплексный/инновационный/уникальный/современный подход/высококачественный».
-- Кейсы с реальными названиями публикуются только с согласием клиента.
+- Кейсы с реальными названиями публикуются только с согласием клиента. Не писать «нам доверяли», «лучшие», выдуманные отзывы/цифры; студия молодая — это сказано честно (FAQ, /about).
+- Согласие на ПД — отдельный документ (`/consent`), чекбокс только на него; аналитика только после согласия; до согласия — ноль запросов к сторонним хостам (`pnpm smoke`).
 - Цены — только «от» (5 000 / 15 000 / 30 000 ₽); состав тарифов — черновик до утверждения.
 
 ## Перед коммитом
