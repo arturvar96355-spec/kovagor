@@ -1,59 +1,70 @@
-# Запуск kovagor.ru
+# Запуск kovagor.ru на своём сервере (VPS)
 
-Схема: VPS в России → Docker (Next.js + Caddy) → домен с REG.RU. Caddy сам получает и продлевает HTTPS-сертификат.
+Схема: сервер в России → Docker (сайт + Caddy) → домен с REG.RU. Caddy сам получает и продлевает HTTPS-сертификат. На сервере работает и Telegram-бот с перепиской менеджеров и клиентов (`docs/TELEGRAM.md`).
 
-## 1. Сервер
-Любой VPS на Ubuntu 22.04/24.04, от 1 vCPU / 2 ГБ RAM (REG.RU «Облачный VPS», Timeweb, Selectel). Сервер в РФ нужен для скорости и под 152-ФЗ (заявки содержат персональные данные).
-Запишите **IPv4-адрес** сервера.
+## 1. Купить сервер
+- ОС: **Ubuntu 24.04** (или 22.04), без панелей управления, «чистая».
+- Ресурсы: **2 vCPU, 2–4 ГБ RAM, 30+ ГБ диск (SSD/NVMe)**. Меньше 2 ГБ — сборка сайта может не пройти.
+- Расположение: Россия (Москва/Санкт-Петербург): быстро для клиентов и корректно для 152-ФЗ.
+- Где: REG.RU («Облачный VPS»), Timeweb Cloud, Selectel — по цене/удобству; примерно 500–1000 ₽/мес.
+- Запишите **IP-адрес** сервера и **пароль root** (или добавьте SSH-ключ, если умеете).
 
-## 2. DNS на REG.RU
-Личный кабинет → Домены → kovagor.ru → «Управление зонами DNS» (должны стоять NS REG.RU: ns1.reg.ru / ns2.reg.ru).
-Удалите парковочные A/AAAA-записи и добавьте:
+## 2. Направить домен на сервер (REG.RU)
+Личный кабинет → Домены → kovagor.ru → «DNS-серверы и управление зоной» (должны стоять `ns1.reg.ru`, `ns2.reg.ru`).
+Удалите парковочные записи **A/AAAA/CNAME** для `@` и `www` (записи **MX/TXT** не трогайте — это почта) и добавьте:
 
 | Тип | Имя | Значение |
 |---|---|---|
 | A | @ | IP сервера |
 | A | www | IP сервера |
 
-Проверка: `dig +short kovagor.ru` или https://dnschecker.org — должен вернуться IP сервера (обычно 5–60 минут).
+Проверка: https://dnschecker.org — для `kovagor.ru` должен показаться IP сервера (5–60 минут).
 
-## 3. Подготовка сервера (один раз)
+## 3. Доступ к репозиторию с сервера
+Репозиторий приватный. Создайте токен только на чтение:
+GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate:
+- Repository access: **Only select repositories → kovagor**;
+- Permissions → Repository permissions → **Contents: Read-only**;
+- Expiration: 90 дней. Скопируйте токен (показывается один раз) и **никому не пересылайте**.
+
+## 4. Подключиться и настроить сервер
+С компьютера (Windows: «Терминал»/PowerShell; macOS/Linux: Терминал):
 ```bash
-ssh root@IP
-apt update && apt -y upgrade
-curl -fsSL https://get.docker.com | sh
-ufw allow OpenSSH && ufw allow 80 && ufw allow 443 && ufw --force enable
+ssh root@IP_СЕРВЕРА
 ```
-(Дальше лучше работать не под root: создайте пользователя `deploy`, добавьте в группу `docker`, отключите вход root по паролю — см. VPS_SETUP_GUIDE из вашего пакета.)
-
-## 4. Выкладка
+Дальше на сервере:
 ```bash
-git clone https://github.com/arturvar96355-spec/kovagor.git && cd kovagor
-git checkout claude/pensive-wright-o875av   # или main после слияния
-cp .env.example .env && nano .env            # SITE_DOMAIN, NEXT_PUBLIC_SITE_URL, токен бота
-docker compose up -d --build
-docker compose logs -f caddy                 # ждём «certificate obtained»
+git clone -b claude/pensive-wright-o875av https://ВАШ_ТОКЕН@github.com/arturvar96355-spec/kovagor.git
+cd kovagor
+bash scripts/server-setup.sh     # ставит Docker, файрвол, защиту от подбора пароля (5–10 минут)
+bash scripts/init-env.sh         # спросит домен, токен бота, имя бота, id группы; создаст .env
+bash scripts/deploy.sh           # собирает и запускает сайт (первый раз 5–10 минут)
 ```
-Репозиторий приватный: клонируйте по SSH-ключу (deploy key) или токеном.
-Проверка: https://kovagor.ru, форма заявки, https://kovagor.ru/sitemap.xml.
+Когда `deploy.sh` закончит, сайт откроется на https://kovagor.ru (сертификат Caddy выпускает сам, если DNS уже указывает на сервер; иначе он повторит попытку, когда DNS обновится: смотрите `docker compose logs -f caddy`).
 
-## 5. Telegram: заявки и переписка с клиентами
-Полная инструкция — `docs/TELEGRAM.md` (бот, группа менеджеров с темами, переменные, вебхук). Кратко: заполнить переменные Telegram в `.env`, `docker compose up -d`, затем `node --env-file=.env scripts/telegram-setup.mjs https://kovagor.ru`.
-
-## 6. Обновление сайта
+## 5. Подключить Telegram-бота
 ```bash
-cd kovagor && git pull && docker compose up -d --build
+bash scripts/set-webhook.sh
 ```
+Скрипт проверит бота и группу (темы, права) и подключит вебхук, либо подскажет, что исправить. Подробности и как узнать id группы — `docs/TELEGRAM.md`.
+
+## 6. Проверка
+Откройте https://kovagor.ru, примите cookie, отправьте тестовую заявку → в группе появится тема → нажмите «Продолжить в Telegram» → ответьте в теме.
+
+## Обновление сайта
+```bash
+cd kovagor && bash scripts/deploy.sh
+```
+
+## Резервная копия
+Переписка и связи заявок хранятся в Docker-томе `kovagor_appdata` (файл `bot.sqlite`). Копия: `docker run --rm -v kovagor_appdata:/d -v "$PWD":/b alpine tar czf /b/appdata-backup.tgz -C /d .`
+
+## Безопасность (после первого запуска)
+- Лучше входить по SSH-ключу и отключить вход по паролю.
+- Токен GitHub можно удалить после клонирования (для обновлений понадобится новый).
+- Файл `.env` содержит секреты: не пересылайте его и не коммитьте.
 
 ## Перед публичным запуском
-- Заменить `TODO(content)` и `TODO(legal)` (реквизиты, тексты юр. страниц, тарифы, контакты) — `grep -rn "TODO(" src`.
-- Подключить Яндекс.Метрику и cookie-баннер.
-- Если нужно закрыть сайт до готовности — добавьте basic-auth в Caddyfile (как в pcstrela, папка `gate/`).
-
-## Временно: Vercel
-1. vercel.com → Add New → Project → импортировать `arturvar96355-spec/kovagor` (Vercel должен иметь доступ к этому GitHub-аккаунту).
-2. Production Branch: `claude/pensive-wright-o875av` (Settings → Git), либо сначала слить ветку в `main`.
-3. Framework Preset: Next.js (определяется сам). Environment Variables: `NEXT_PUBLIC_NOINDEX=1` (закрыть от поисковиков), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, при желании `NEXT_PUBLIC_SITE_URL`.
-4. Deploy. Тариф Hobby — только некоммерческое использование, для временного показа подходит.
-5. Домен (по желанию): Settings → Domains → kovagor.ru. На REG.RU: A-запись `@` → `76.76.21.21`, CNAME `www` → `cname.vercel-dns.com` (актуальные значения покажет сам Vercel).
-6. Когда сайт готов: переезд на VPS (разделы выше), убрать `NEXT_PUBLIC_NOINDEX`.
+- Заменить `TODO(content)` и `TODO(legal)` (реквизиты, тексты юр. страниц, тарифы, контакты): `grep -rn "TODO(" src`.
+- Открыть сайт поисковикам: удалить строку `NEXT_PUBLIC_NOINDEX=1` из `.env` и выполнить `bash scripts/deploy.sh`.
+- Добавить `kovagor.ru` в настройки счётчика Яндекс.Метрики.
