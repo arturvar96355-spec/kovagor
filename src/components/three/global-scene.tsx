@@ -6,19 +6,9 @@ import { gsap, registerGsap, ScrollTrigger } from '@/lib/animation'
 import { preloadDelay } from '@/components/motion/preloader'
 import { bindScenePoses } from './bind-poses'
 import { sceneInput } from './state'
+import { canUse3D, SCENE_READY_EVENT } from './capability'
 
 const Scene = dynamic(() => import('./monogram-scene'), { ssr: false })
-
-function canUse3D() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
-  if (!window.matchMedia('(min-width: 900px)').matches) return false
-  try {
-    const c = document.createElement('canvas')
-    return !!(c.getContext('webgl2') || c.getContext('webgl'))
-  } catch {
-    return false
-  }
-}
 
 /**
  * Одна фиксированная WebGL-сцена на всю главную: объёмная монограмма KVG «путешествует» вдоль страницы,
@@ -36,7 +26,8 @@ export function GlobalScene() {
   useEffect(() => {
     if (!enabled) return
     registerGsap()
-    sceneInput.startAt = performance.now() / 1000 + preloadDelay()
+    // во время заставки монограмма появляется сразу (на тёмном фоне), иначе — после паузы под заставку
+    sceneInput.startAt = performance.now() / 1000 + (sceneInput.preloading ? 0.15 : preloadDelay())
     const cleanup = bindScenePoses()
     const move = (e: PointerEvent) => {
       sceneInput.px = (e.clientX / window.innerWidth) * 2 - 1
@@ -57,7 +48,10 @@ export function GlobalScene() {
   if (!enabled) return null
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-20">
-      <Scene active={visible} onReady={() => document.documentElement.setAttribute('data-3d', '')} />
+      <Scene active={visible} onReady={() => {
+        document.documentElement.setAttribute('data-3d', '')
+        window.dispatchEvent(new Event(SCENE_READY_EVENT))
+      }} />
     </div>
   )
 }

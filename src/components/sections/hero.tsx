@@ -2,8 +2,7 @@
 
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
-import { gsap, ease, registerGsap, NO_REDUCED_MOTION } from '@/lib/animation'
-import { preloadDelay } from '@/components/motion/preloader'
+import { gsap, ease, registerGsap, afterPreload, NO_REDUCED_MOTION } from '@/lib/animation'
 import { Monogram } from '@/components/brand'
 import { SplitReveal } from '@/components/motion/split-reveal'
 import { Magnetic } from '@/components/motion/magnetic'
@@ -14,19 +13,18 @@ export function Hero() {
   useGSAP(
     () => {
       registerGsap()
-      const d = preloadDelay() // ждём окончания заставки
       const mm = gsap.matchMedia()
       mm.add(NO_REDUCED_MOTION, () => {
-        // монограмма: контуры проявляются по очереди
-        gsap.from('[data-mono-path]', {
-          opacity: 0,
-          yPercent: 8,
-          duration: 1.4,
-          ease: ease.out,
-          stagger: 0.12,
-          delay: d,
+        // фолбэк-монограмма (плоская) и подписи ждут, пока заставка начнёт уезжать.
+        // Элементы берём внутри секции заранее: в отложенном колбэке строковые селекторы потеряли бы scope
+        const paths = gsap.utils.toArray<SVGPathElement>('[data-mono-path]', root.current)
+        const fades = gsap.utils.toArray<HTMLElement>('[data-hero-fade]', root.current)
+        gsap.set(paths, { opacity: 0, yPercent: 8 })
+        gsap.set(fades, { opacity: 0, y: 16 })
+        afterPreload(() => {
+          gsap.to(paths, { opacity: 1, yPercent: 0, duration: 1.4, ease: ease.out, stagger: 0.12, delay: 0.3 })
+          gsap.to(fades, { opacity: 1, y: 0, duration: 1, ease: ease.soft, delay: 1, stagger: 0.12 })
         })
-        gsap.from('[data-hero-fade]', { opacity: 0, y: 16, duration: 1, ease: ease.soft, delay: 0.9 + d, stagger: 0.12 })
       })
     },
     { scope: root },
@@ -41,7 +39,7 @@ export function Hero() {
 
       <div className="relative z-10 mt-[10vh] max-w-5xl lg:max-w-[58vw]">
         <p data-hero-fade className="mb-8 text-xs uppercase tracking-[0.35em] text-mute">Студия сайтов под ключ</p>
-        <SplitReveal as="h1" delay={preloadDelay()} className="font-display text-[clamp(3rem,7.6vw,8.5rem)] font-medium leading-[0.95] tracking-tight">
+        <SplitReveal as="h1" immediate className="font-display text-[clamp(3rem,7.6vw,8.5rem)] font-medium leading-[0.95] tracking-tight">
           Сайты, которые продают ещё до первого звонка
         </SplitReveal>
       </div>

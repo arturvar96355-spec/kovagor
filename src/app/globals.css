@@ -21,3 +21,7 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-stopped { overflow: clip; }
 
 .container-x { padding-inline: clamp(20px, 4vw, 64px); }
+
+/* заставка: шапка проявляется, когда фон уезжает */
+header { transition: opacity .8s ease, background-color .5s, padding .5s; }
+html[data-preloading] header { opacity: 0; }

@@ -4,7 +4,7 @@ import { pose, sceneInput } from './state'
 
 /** Привязывает позу монограммы к прокрутке: между соседними секциями она плавно переезжает (scrub). Возвращает cleanup. */
 export function bindScenePoses() {
-  Object.assign(pose, POSES.hero)
+  if (!sceneInput.preloading) Object.assign(pose, POSES.hero)
   const tweens: gsap.core.Tween[] = []
 
   for (let i = 1; i < SECTION_ORDER.length; i++) {
