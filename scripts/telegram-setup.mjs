@@ -69,7 +69,7 @@ if (process.exitCode) {
 if (arg?.startsWith('http')) {
   // за ретранслятором вебхук принимает он (TELEGRAM_WEBHOOK_URL), иначе — сам сайт
   const url = process.env.TELEGRAM_WEBHOOK_URL ?? `${arg.replace(/\/$/, '')}/api/telegram`
-  await call('setWebhook', { url, secret_token: secret, allowed_updates: ['message'] })
+  await call('setWebhook', { url, secret_token: secret, allowed_updates: ['message', 'callback_query'] })
   await call('setMyCommands', { commands: [{ command: 'start', description: 'Начать переписку' }] })
   const info = await call('getWebhookInfo')
   ok(`Вебхук: ${info.url}${info.last_error_message ? `  (последняя ошибка: ${info.last_error_message})` : ''}`)

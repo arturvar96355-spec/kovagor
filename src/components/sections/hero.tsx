@@ -40,7 +40,7 @@ export function Hero() {
       <div className="relative z-10 mt-[10vh] max-w-5xl lg:max-w-[58vw]">
         <p data-hero-fade className="mb-8 text-xs uppercase tracking-[0.35em] text-mute">Студия сайтов под ключ</p>
         <SplitReveal as="h1" immediate className="font-display text-[clamp(3rem,7.6vw,8.5rem)] font-medium leading-[0.95] tracking-tight">
-          Сайты, которые продают ещё до первого звонка
+          Сайты, которые запоминаются с первого экрана
         </SplitReveal>
       </div>
 

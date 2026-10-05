@@ -7,7 +7,7 @@ import { Reveal } from '@/components/motion/reveal'
 export function Work() {
   return (
     <section id="work" className="container-x border-t border-line py-[14vh]">
-      <SectionHead index="04" label="Проекты" title="Нам доверяли" />
+      <SectionHead index="04" label="Проекты" title="Примеры работ" />
       <Reveal className="mx-auto max-w-5xl">
         {projects.map((p) => (
           <Link key={p.slug} href={`/work/${p.slug}`} data-goal="case_open" data-goal-param={p.slug} data-stagger className="group flex items-baseline justify-between gap-6 border-b border-line py-7 first:border-t">

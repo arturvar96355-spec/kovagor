@@ -18,6 +18,12 @@ for (const [name, opts] of [
 ]) {
   const page = await browser.newPage(opts)
   const errors = []
+  const external = new Set()
+  const origin = new URL(BASE).origin
+  page.on('request', (r) => {
+    const u = r.url()
+    if (!u.startsWith(origin) && !u.startsWith('data:') && !u.startsWith('blob:')) external.add(new URL(u).host)
+  })
   page.on('pageerror', (e) => errors.push(e.message))
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
   await page.goto(BASE)
@@ -26,6 +32,7 @@ for (const [name, opts] of [
   check(ids.length === 4, `${name}: страница отрисовалась (нет __next_error__)`)
   check(errors.length === 0, `${name}: нет ошибок в консоли ${errors.length ? JSON.stringify(errors.slice(0, 2)) : ''}`)
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), `${name}: нет горизонтальной прокрутки`)
+  check(external.size === 0, `${name}: до согласия нет запросов к сторонним хостам ${external.size ? JSON.stringify([...external]) : ''}`)
   if (name === 'desktop') {
     await page.waitForTimeout(3000)
     await page.click('a:has-text("Обсудить проект")')
@@ -43,9 +50,13 @@ for (const [name, opts] of [
   }
   await page.close()
 }
-for (const path of ['/privacy', '/cookies', '/offer', '/work/pk-strela', '/work/keystone', '/opengraph-image', '/sitemap.xml', '/robots.txt']) {
+for (const path of ['/privacy', '/consent', '/cookies', '/offer', '/work/pk-strela', '/work/keystone', '/opengraph-image', '/sitemap.xml', '/robots.txt']) {
   const r = await (await browser.newPage()).goto(BASE + path)
   check(r.status() === 200, `${path}: 200`)
+}
+{
+  const r = await (await browser.newPage()).goto(BASE)
+  check(r.headers()['x-content-type-options'] === 'nosniff' && r.headers()['x-frame-options'] === 'DENY', 'заголовки безопасности выставлены')
 }
 {
   const r = await (await browser.newPage()).goto(BASE + '/no-such-page')

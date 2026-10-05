@@ -35,6 +35,8 @@ export class Store {
         closed INTEGER NOT NULL DEFAULT 0,
         created_at INTEGER NOT NULL
       );
+      -- согласие клиента на обработку данных в Telegram-переписке (дата, чат)
+      CREATE TABLE IF NOT EXISTS tg_consents (chat_id INTEGER PRIMARY KEY, consented_at INTEGER NOT NULL);
       CREATE INDEX IF NOT EXISTS threads_client ON threads(client_chat_id, closed);
       -- журнал согласий на обработку ПД (152-ФЗ): хранить не менее 3 лет
       CREATE TABLE IF NOT EXISTS consents (
@@ -44,6 +46,14 @@ export class Store {
         consented_at INTEGER NOT NULL
       );
     `)
+  }
+
+  hasTgConsent(chatId: number): boolean {
+    return !!this.db.prepare('SELECT 1 FROM tg_consents WHERE chat_id = ?').get(chatId)
+  }
+
+  setTgConsent(chatId: number): void {
+    this.db.prepare('INSERT OR IGNORE INTO tg_consents(chat_id, consented_at) VALUES (?,?)').run(chatId, Date.now())
   }
 
   logConsent(c: { name: string; contact: string; policy_version: string; ip_hash: string }): void {

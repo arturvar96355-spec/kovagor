@@ -13,7 +13,8 @@ export type TgMessage = {
   forum_topic_reopened?: unknown
   forum_topic_edited?: unknown
 }
-export type TgUpdate = { update_id: number; message?: TgMessage }
+export type TgCallbackQuery = { id: string; from: TgUser; message?: TgMessage; data?: string }
+export type TgUpdate = { update_id: number; message?: TgMessage; callback_query?: TgCallbackQuery }
 
 export type BotConfig = {
   groupId: number // супергруппа менеджеров с включёнными темами

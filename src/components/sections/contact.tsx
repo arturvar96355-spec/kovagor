@@ -160,7 +160,10 @@ export function Contact() {
                   <div data-stagger>
                     <label className="flex items-start gap-3 text-sm opacity-70">
                       <input type="checkbox" className="mt-1 accent-paper" {...register('consent')} />
-                      <span>Согласен на обработку персональных данных (152-ФЗ)</span>
+                      <span>
+                        Даю <a href="/consent" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">согласие на обработку персональных данных</a> и ознакомлен(а) с{' '}
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">политикой</a>
+                      </span>
                     </label>
                     {errors.consent && <p className="pt-2 text-sm text-red-300">{errors.consent.message}</p>}
                   </div>

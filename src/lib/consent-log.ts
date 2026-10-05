@@ -1,8 +1,10 @@
 import { createHmac } from 'node:crypto'
 import type { Store } from './telegram/store'
 
-/** Версия текста политики, под которую получено согласие. Менять при каждой правке /privacy. */
-export const POLICY_VERSION = '2026-10-draft'
+import { CONSENT_VERSION, POLICY_VERSION } from '@/content/legal'
+
+/** В журнал пишется версия согласия и политики, под которые получено согласие. */
+const VERSION = `consent:${CONSENT_VERSION}|policy:${POLICY_VERSION}`
 
 /** IP не хранится открыто: храним только хэш (достаточно, чтобы подтвердить факт согласия). */
 export const hashIp = (ip: string, secret = process.env.TELEGRAM_WEBHOOK_SECRET ?? 'kovagor') =>
@@ -12,7 +14,7 @@ export const hashIp = (ip: string, secret = process.env.TELEGRAM_WEBHOOK_SECRET 
 export function logConsent(store: Store | null, c: { name: string; contact: string; ip: string }) {
   if (!store) return
   try {
-    store.logConsent({ name: c.name, contact: c.contact, policy_version: POLICY_VERSION, ip_hash: hashIp(c.ip) })
+    store.logConsent({ name: c.name, contact: c.contact, policy_version: VERSION, ip_hash: hashIp(c.ip) })
   } catch (e) {
     console.error('[consent] не удалось записать согласие', e)
   }

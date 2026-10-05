@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { site } from '@/content/site'
+import { footerRequisites } from '@/content/legal'
 import { CookieSettingsButton } from './cookie-settings-button'
 import { SplitReveal } from './motion/split-reveal'
 
@@ -12,9 +13,10 @@ export function Footer() {
         </SplitReveal>
       </div>
       <div className="mx-auto mt-10 flex max-w-7xl flex-wrap lg:pr-[clamp(0px,14vw,240px)] items-center justify-between gap-4 border-t border-paper/15 pt-8 text-sm opacity-70">
-        <p>© {new Date().getFullYear()} {site.name}</p>
-        <nav className="flex gap-6">
+        <p>© {new Date().getFullYear()} {site.name}{footerRequisites() ? ` · ${footerRequisites()}` : ''}</p>
+        <nav className="flex flex-wrap gap-x-6 gap-y-2">
           <Link href="/privacy" className="hover:underline">Политика конфиденциальности</Link>
+          <Link href="/consent" className="hover:underline">Согласие на обработку данных</Link>
           <Link href="/cookies" className="hover:underline">Cookie</Link>
           <Link href="/offer" className="hover:underline">Оферта</Link>
           <CookieSettingsButton />

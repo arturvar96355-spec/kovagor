@@ -1,7 +1,7 @@
 import { TelegramError, esc, type TgApi } from './api'
 import { parseStartParam } from './link'
 import type { Store, Thread } from './store'
-import type { BotConfig, TgMessage, TgUpdate, TgUser } from './types'
+import type { BotConfig, TgCallbackQuery, TgMessage, TgUpdate, TgUser } from './types'
 import { rateLimit } from '@/lib/rate-limit'
 
 export type Deps = { api: TgApi; store: Store; config: BotConfig }
@@ -46,6 +46,7 @@ async function handleClient(deps: Deps, msg: TgMessage) {
       const lead = store.getLead(leadId)
       if (thread && lead) {
         store.linkClient(thread.topic_id, msg.chat.id)
+        store.setTgConsent(msg.chat.id) // согласие уже дано на сайте (отдельный документ + чекбокс в форме)
         await say(api, msg.chat.id, `Здравствуйте, ${lead.name}! Ваша заявка №${lead.id} получена. Менеджер ответит вам здесь, в этом чате.\n\n${config.siteUrl}/privacy — как мы обрабатываем данные.`)
         await say(api, config.groupId, `✅ Клиент подключился в Telegram${msg.from?.username ? `: @${esc(msg.from.username)}` : ''}. Теперь ваши сообщения в этой теме уходят ему.`, thread.topic_id, true)
         return
@@ -57,6 +58,17 @@ async function handleClient(deps: Deps, msg: TgMessage) {
 
   // защита от спама: тема создаётся на сообщение, поэтому ограничиваем поток от одного чата
   if (!rateLimit(`tg:${msg.chat.id}`, 30, 60_000)) return
+
+  // Клиент пришёл в бота сам, согласия на сайте не давал: сначала явное согласие кнопкой (отдельный документ), только потом переписка
+  if (!store.hasTgConsent(msg.chat.id)) {
+    await api.call('sendMessage', {
+      chat_id: msg.chat.id,
+      text: `Чтобы мы могли переписываться, нужно ваше согласие на обработку персональных данных (имя в Telegram, содержание сообщений).\n\nСогласие: ${config.siteUrl}/consent\nПолитика: ${config.siteUrl}/privacy`,
+      disable_web_page_preview: true,
+      reply_markup: { inline_keyboard: [[{ text: 'Даю согласие', callback_data: 'consent_yes' }]] },
+    })
+    return
+  }
 
   let thread = store.openThreadByClient(msg.chat.id)
   const isNew = !thread
@@ -109,8 +121,19 @@ async function handleManager(deps: Deps, msg: TgMessage) {
   }
 }
 
+/** Нажатие кнопки «Даю согласие» в личном чате с ботом. */
+async function handleCallback(deps: Deps, q: TgCallbackQuery) {
+  const { api, store } = deps
+  const chatId = q.message?.chat.id
+  if (!chatId || q.message?.chat.type !== 'private' || q.data !== 'consent_yes') return
+  store.setTgConsent(chatId)
+  await api.call('answerCallbackQuery', { callback_query_id: q.id, text: 'Согласие принято' }).catch(() => {})
+  await say(api, chatId, 'Спасибо! Напишите ваше сообщение — менеджер ответит здесь.')
+}
+
 /** Точка входа вебхука. Ошибки не пробрасываем: Telegram повторял бы доставку, а дубль сообщения хуже потери. */
 export async function handleUpdate(deps: Deps, update: TgUpdate) {
+  if (update.callback_query) return handleCallback(deps, update.callback_query)
   const msg = update.message
   if (!msg) return
   if (msg.chat.type === 'private') return handleClient(deps, msg)

@@ -147,11 +147,36 @@ describe('переписка', () => {
     expect(fake.sent('copyMessage')[0].params.message_thread_id).toBe(101)
   })
 
-  it('клиент без заявки пишет боту — создаётся новая тема и приходит подтверждение', async () => {
+  it('клиент без заявки: сначала просьба о согласии (кнопка), темы и пересылки нет', async () => {
     await handleUpdate(deps, upd(fromClient('Здравствуйте, хочу сайт')))
+    const ask = fake.sent('sendMessage')[0].params
+    expect(String(ask.text)).toContain('/consent')
+    expect(JSON.stringify(ask.reply_markup)).toContain('consent_yes')
+    expect(fake.sent('createForumTopic')).toHaveLength(0)
+    expect(fake.sent('copyMessage')).toHaveLength(0)
+  })
+
+  it('после нажатия «Даю согласие» сообщения доходят: создаётся тема и приходит подтверждение', async () => {
+    await handleUpdate(deps, upd(fromClient('Здравствуйте')))
+    await handleUpdate(deps, { update_id: n++, callback_query: { id: 'cb1', from: { id: CLIENT }, data: 'consent_yes', message: fromClient('') } })
+    expect(deps.store.hasTgConsent(CLIENT)).toBe(true)
+    fake.calls.length = 0
+    await handleUpdate(deps, upd(fromClient('Хочу сайт')))
     expect(fake.sent('createForumTopic')[0].params.name).toContain('Иван')
     expect(fake.sent('copyMessage')).toHaveLength(1)
     expect(fake.sent('sendMessage').some((c) => c.params.chat_id === CLIENT)).toBe(true)
+  })
+
+  it('чужая кнопка в группе или другие данные кнопки согласия не дают', async () => {
+    await handleUpdate(deps, { update_id: n++, callback_query: { id: 'x', from: { id: 1 }, data: 'consent_yes', message: fromManager(100, '') } })
+    await handleUpdate(deps, { update_id: n++, callback_query: { id: 'y', from: { id: CLIENT }, data: 'other', message: fromClient('') } })
+    expect(deps.store.hasTgConsent(CLIENT)).toBe(false)
+  })
+
+  it('клиент по ссылке с сайта считается давшим согласие (оно дано в форме)', async () => {
+    const { botLink } = await submitLead(deps, { name: 'Иван', contact: '@ivan', project: 'studio', message: '' })
+    await handleUpdate(deps, upd(fromClient(`/start ${botLink.split('start=')[1]}`)))
+    expect(deps.store.hasTgConsent(CLIENT)).toBe(true)
   })
 
   it('удалённую вручную тему пересоздаёт и доставляет сообщение', async () => {

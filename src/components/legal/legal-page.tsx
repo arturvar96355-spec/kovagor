@@ -19,4 +19,11 @@ export function LegalPage({ title, updated, children }: { title: string; updated
   )
 }
 
-export const OPERATOR = 'TODO(legal): наименование, ИНН/ОГРН(ИП), адрес, email оператора'
+import { operatorLines } from '@/content/legal'
+
+/** Строка оператора для текстов документов; незаполненные поля помечены TODO(legal). */
+export function operatorText() {
+  const o = operatorLines()
+  return `${o.name}, ИНН ${o.inn}${o.ogrn ? `, ОГРН(ИП) ${o.ogrn}` : ''}, ${o.address}, ${o.email}`
+}
+export const OPERATOR = operatorText()
