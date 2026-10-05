@@ -51,6 +51,26 @@ for (const [name, opts] of [
   await page.close()
 }
 {
+  // шторка: переход между страницами реально анимируется и в конце возвращается в исходное положение
+  const d = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+  await d.goto(BASE + '/about')
+  await d.waitForTimeout(2500)
+  await d.evaluate(() => {
+    const el = [...document.querySelectorAll('div[aria-hidden]')].find((e) => e.className.includes('z-[95]'))
+    window.__curtain = []
+    const t0 = performance.now()
+    ;(function sample() {
+      window.__curtain.push(new DOMMatrix(getComputedStyle(el).transform).m42)
+      if (performance.now() - t0 < 3000) requestAnimationFrame(sample)
+    })()
+  })
+  await d.click('a:has-text("Как мы работаем")')
+  await d.waitForTimeout(3500)
+  const vals = await d.evaluate(() => window.__curtain)
+  check(Math.min(...vals) < 400 && d.url().includes('#process'), 'шторка при переходе анимируется, переход состоялся')
+  check(vals[vals.length - 1] >= 800, 'шторка вернулась в исходное положение')
+}
+{
   const m = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
   for (const path of ['/about', '/motion', '/privacy', '/consent', '/cookies', '/work/keystone']) {
     await m.goto(BASE + path)

@@ -37,13 +37,15 @@ export function PageCurtain() {
     gsap.set(panel.current, { yPercent: 100 })
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
     const onClick = (e: MouseEvent) => {
-      if (reduced.matches || busy.current || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+      if (reduced.matches || busy.current || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
       const a = (e.target as Element | null)?.closest<HTMLAnchorElement>('a[href]')
       if (!a || a.target === '_blank' || a.hasAttribute('download')) return
       const url = new URL(a.href, location.href)
       if (url.origin !== location.origin) return
       if (url.pathname === location.pathname) return // якорь/тот же адрес — обычное поведение
+      // Слушатель в фазе перехвата стоит раньше обработчика next/link: гасим его, переходом управляем сами
       e.preventDefault()
+      e.stopPropagation()
       busy.current = true
       gsap.fromTo(panel.current, { yPercent: 100 }, {
         yPercent: 0,
@@ -58,8 +60,8 @@ export function PageCurtain() {
         }
       }, 5000)
     }
-    document.addEventListener('click', onClick)
-    return () => document.removeEventListener('click', onClick)
+    document.addEventListener('click', onClick, true)
+    return () => document.removeEventListener('click', onClick, true)
   }, [router])
 
   return <div ref={panel} aria-hidden className="pointer-events-none fixed inset-0 z-[95] bg-ink" style={{ transform: 'translateY(100%)' }} />
