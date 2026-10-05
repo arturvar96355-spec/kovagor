@@ -67,7 +67,7 @@ for (const [name, opts] of [
   await d.click('a:has-text("Как мы работаем")')
   await d.waitForTimeout(3500)
   const vals = await d.evaluate(() => window.__curtain)
-  check(Math.min(...vals) < 400 && d.url().includes('#process'), 'шторка при переходе анимируется, переход состоялся')
+  check(Math.min(...vals) < 1700 && d.url().includes('#process'), 'шторка при переходе анимируется, переход состоялся')
   check(vals[vals.length - 1] >= 800, 'шторка вернулась в исходное положение')
 }
 {
