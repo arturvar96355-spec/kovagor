@@ -49,3 +49,11 @@ cd kovagor && git pull && docker compose up -d --build
 - Заменить `TODO(content)` и `TODO(legal)` (реквизиты, тексты юр. страниц, тарифы, контакты) — `grep -rn "TODO(" src`.
 - Подключить Яндекс.Метрику и cookie-баннер.
 - Если нужно закрыть сайт до готовности — добавьте basic-auth в Caddyfile (как в pcstrela, папка `gate/`).
+
+## Временно: Vercel
+1. vercel.com → Add New → Project → импортировать `arturvar96355-spec/kovagor` (Vercel должен иметь доступ к этому GitHub-аккаунту).
+2. Production Branch: `claude/pensive-wright-o875av` (Settings → Git), либо сначала слить ветку в `main`.
+3. Framework Preset: Next.js (определяется сам). Environment Variables: `NEXT_PUBLIC_NOINDEX=1` (закрыть от поисковиков), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, при желании `NEXT_PUBLIC_SITE_URL`.
+4. Deploy. Тариф Hobby — только некоммерческое использование, для временного показа подходит.
+5. Домен (по желанию): Settings → Domains → kovagor.ru. На REG.RU: A-запись `@` → `76.76.21.21`, CNAME `www` → `cname.vercel-dns.com` (актуальные значения покажет сам Vercel).
+6. Когда сайт готов: переезд на VPS (разделы выше), убрать `NEXT_PUBLIC_NOINDEX`.

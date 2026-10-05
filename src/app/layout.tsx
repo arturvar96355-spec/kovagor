@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kovagor.ru'),
   title: 'KOVAGOR — сайты под ключ',
   description: 'KOVAGOR создаёт сайты под ключ: дизайн, анимации, разработка и запуск.',
+  robots: process.env.NEXT_PUBLIC_NOINDEX === '1' ? { index: false, follow: false } : undefined,
 }
 
 export const viewport: Viewport = { themeColor: '#f4f1ea' }
