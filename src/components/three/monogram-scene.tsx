@@ -95,7 +95,7 @@ function Monogram() {
   return (
     <group ref={group}>
       <mesh geometry={geometry}>
-        <meshPhysicalMaterial ref={mat} color="#1b1b19" roughness={0.32} metalness={0.55} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={1.7} />
+        <meshPhysicalMaterial ref={mat} color="#1b1b19" roughness={0.26} metalness={0.7} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={1.7} />
       </mesh>
     </group>
   )
@@ -106,6 +106,7 @@ export default function MonogramScene({ active, onReady }: { active: boolean; on
   return (
     <Canvas
       dpr={dpr}
+      style={{ pointerEvents: 'none' }} // иначе канвас на весь экран перехватывает клики по странице
       frameloop={active ? 'always' : 'never'}
       camera={{ position: [0, 0, 7], fov: 32 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
@@ -116,13 +117,14 @@ export default function MonogramScene({ active, onReady }: { active: boolean; on
       <ambientLight intensity={0.35} />
       <directionalLight position={[3, 4, 5]} intensity={1.1} />
       <Environment resolution={256}>
-        {/* студийный свет без внешних HDRI: мягкие боксы-источники */}
+        {/* студийный свет без внешних HDRI. Крупный софтбокс спереди-сверху даёт на лицевой грани чёткий переход
+            «светлая верхняя часть → тёмная нижняя»: так плоскость читается объёмной даже в покое */}
+        <Lightformer form="rect" intensity={2.2} position={[0, 3.6, 8]} scale={[16, 6, 1]} color="#f4f1ea" />
+        <Lightformer form="rect" intensity={1.1} position={[0, -4.5, 8]} scale={[16, 2, 1]} color="#cfc7b6" />
         <Lightformer form="rect" intensity={4} position={[0, 5, 3]} scale={[10, 2, 1]} />
         <Lightformer form="rect" intensity={3} position={[-5, 1, 2]} scale={[2, 6, 1]} />
         <Lightformer form="rect" intensity={2.2} position={[5, -1, 3]} scale={[1.5, 6, 1]} color="#ffe9cf" />
         <Lightformer form="ring" intensity={1.5} position={[0, 0, -5]} scale={8} />
-        <Lightformer form="rect" intensity={1.4} position={[2, 3, 6]} scale={[7, 3, 1]} color="#f4f1ea" />
-        <Lightformer form="rect" intensity={0.9} position={[-3, -3, 5]} scale={[6, 1.2, 1]} />
       </Environment>
       <Monogram />
     </Canvas>

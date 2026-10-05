@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, registerGsap, NO_REDUCED_MOTION } from '@/lib/animation'
 import { tariffs } from '@/content/tariffs'
+import { TiltCard } from '@/components/motion/tilt-card'
 import { SectionHead } from '@/components/motion/section-head'
 
 const fmt = (n: number) => `${Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g, ' ')} ₽`
@@ -36,7 +37,8 @@ export function Pricing() {
       <SectionHead index="03" label="Тарифы" title="Прозрачные цены" />
       <div className="grid gap-5 lg:grid-cols-3">
         {tariffs.map((t) => (
-          <div key={t.id} data-tariff className={`flex flex-col rounded-3xl p-8 transition-transform duration-500 hover:-translate-y-2 md:p-10 ${t.featured ? 'bg-ink text-paper' : 'border border-line bg-paper-2'}`}>
+          <div key={t.id} data-tariff className="flex">
+          <TiltCard className={`flex flex-1 flex-col rounded-3xl p-8 md:p-10 ${t.featured ? 'bg-ink text-paper' : 'border border-line bg-paper-2'}`}>
             <div className="flex items-center justify-between">
               <h3 className="font-display text-4xl">{t.name}</h3>
               {t.featured && <span className="rounded-full border border-paper/40 px-3 py-1 text-[10px] uppercase tracking-[0.2em]">Рекомендуем</span>}
@@ -52,7 +54,8 @@ export function Pricing() {
             <a href="#contact" onClick={() => window.dispatchEvent(new CustomEvent("pick-tariff", { detail: t.id }))} className={`mt-10 rounded-full px-6 py-4 text-center text-xs uppercase tracking-[0.2em] transition-colors ${t.featured ? 'bg-paper text-ink hover:bg-paper-2' : 'bg-ink text-paper hover:bg-ink-2'}`}>
               Выбрать
             </a>
-          </div>
+          </TiltCard>
+        </div>
         ))}
       </div>
       <p className="mt-8 max-w-2xl text-sm text-mute">Указана цена «от». Итоговую стоимость называем после короткого обсуждения задачи — она зависит от объёма, количества страниц и сложности анимаций.</p>
