@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { leadSchema } from '@/lib/schemas'
 import { rateLimit } from '@/lib/rate-limit'
+import { getBot } from '@/lib/telegram'
+import { submitLead } from '@/lib/telegram/leads'
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -12,12 +14,25 @@ export async function POST(req: NextRequest) {
   if (parsed.data.website) return NextResponse.json({ ok: true })
 
   const { name, contact, project, message } = parsed.data
-  const text = `Новая заявка KOVAGOR\nИмя: ${name}\nКонтакт: ${contact}\nТариф: ${project}\n${message ? `Сообщение: ${message}` : ''}`
 
+  // Полный режим: тема в группе менеджеров + ссылка на двустороннюю переписку с клиентом в боте
+  const bot = getBot()
+  if (bot) {
+    try {
+      const { botLink } = await submitLead(bot, { name, contact, project, message })
+      return NextResponse.json({ ok: true, botLink })
+    } catch (e) {
+      console.error('[lead] telegram', e)
+      return NextResponse.json({ ok: false, error: 'Не удалось отправить, напишите нам в Telegram' }, { status: 502 })
+    }
+  }
+
+  // Упрощённый режим (бот не настроен): просто сообщение в чат, без переписки
+  const text = `Новая заявка KOVAGOR\nИмя: ${name}\nКонтакт: ${contact}\nТариф: ${project}\n${message ? `Сообщение: ${message}` : ''}`
   const token = process.env.TELEGRAM_BOT_TOKEN
-  const chat = process.env.TELEGRAM_CHAT_ID
+  const chat = process.env.TELEGRAM_CHAT_ID ?? process.env.TELEGRAM_GROUP_ID
   if (token && chat) {
-    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const r = await fetch(`${process.env.TELEGRAM_API_BASE ?? 'https://api.telegram.org'}/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ chat_id: chat, text }),

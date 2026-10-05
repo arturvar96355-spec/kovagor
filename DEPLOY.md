@@ -37,8 +37,8 @@ docker compose logs -f caddy                 # ждём «certificate obtained»
 Репозиторий приватный: клонируйте по SSH-ключу (deploy key) или токеном.
 Проверка: https://kovagor.ru, форма заявки, https://kovagor.ru/sitemap.xml.
 
-## 5. Telegram для заявок
-@BotFather → /newbot → токен в `TELEGRAM_BOT_TOKEN`. Напишите боту любое сообщение, затем откройте `https://api.telegram.org/bot<TOKEN>/getUpdates` и возьмите `chat.id` → `TELEGRAM_CHAT_ID`. Применить: `docker compose up -d`.
+## 5. Telegram: заявки и переписка с клиентами
+Полная инструкция — `docs/TELEGRAM.md` (бот, группа менеджеров с темами, переменные, вебхук). Кратко: заполнить переменные Telegram в `.env`, `docker compose up -d`, затем `node --env-file=.env scripts/telegram-setup.mjs https://kovagor.ru`.
 
 ## 6. Обновление сайта
 ```bash

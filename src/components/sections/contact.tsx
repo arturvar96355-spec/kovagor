@@ -50,7 +50,7 @@ function Dots() {
   )
 }
 
-function Success() {
+function Success({ botLink }: { botLink?: string }) {
   return (
     <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }} className="flex flex-col items-start justify-center gap-8 self-center">
       <svg viewBox="0 0 80 80" className="h-20 w-20 text-paper" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -61,12 +61,27 @@ function Success() {
         <p className="font-display text-5xl md:text-6xl">Заявка отправлена</p>
         <p className="mt-4 max-w-sm text-lg opacity-70">Спасибо! Мы свяжемся с вами в течение рабочего дня.</p>
       </div>
+      {botLink && (
+        <div>
+          <a
+            href={botLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-goal="tg_bot_open"
+            className="inline-flex items-center gap-3 rounded-full bg-paper px-8 py-4 text-xs uppercase tracking-[0.2em] text-ink"
+          >
+            Продолжить в Telegram <span aria-hidden>↗</span>
+          </a>
+          <p className="mt-3 max-w-sm text-sm opacity-60">Так мы ответим быстрее, а переписка останется у вас в Telegram.</p>
+        </div>
+      )}
     </motion.div>
   )
 }
 
 export function Contact() {
   const [sent, setSent] = useState(false)
+  const [botLink, setBotLink] = useState<string>()
   const [serverError, setServerError] = useState('')
   const {
     register,
@@ -92,6 +107,7 @@ export function Contact() {
       const j = await r.json().catch(() => ({}))
       if (r.ok && j.ok) {
         goal('form_submit', { tariff: data.project ?? 'other' })
+        setBotLink(j.botLink)
         setSent(true)
         reset()
       } else setServerError(j.error ?? 'Ошибка отправки. Напишите нам в Telegram.')
@@ -118,7 +134,7 @@ export function Contact() {
         <div className="flex lg:min-h-[600px] lg:items-start">
         <AnimatePresence mode="wait" initial={false}>
           {sent ? (
-            <Success key="ok" />
+            <Success key="ok" botLink={botLink} />
           ) : (
             <motion.div key="form" className="w-full" exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}>
               <Reveal>
