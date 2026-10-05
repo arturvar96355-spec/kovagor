@@ -31,6 +31,7 @@ export function SplitReveal({ as = 'div', className, children, delay = 0, by = '
           if (!ref.current) return
           split = new SplitText(ref.current, {
             type: by,
+            aria: /^h[1-6]$/.test(String(as)) ? 'auto' : 'none', // aria-label допустим только у заголовков
             mask: by,
             autoSplit: true,
             onSplit: (self) => {

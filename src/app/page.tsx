@@ -10,11 +10,13 @@ import { Process } from '@/components/sections/process'
 import { Pricing } from '@/components/sections/pricing'
 import { Faq } from '@/components/sections/faq'
 import { Footer } from '@/components/footer'
+import { JsonLd } from '@/components/json-ld'
 import { Contact } from '@/components/sections/contact'
 
 export default function Home() {
   return (
     <>
+      <JsonLd siteUrl={(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kovagor.ru').replace(/\/$/, '')} />
       <ScrollProgress />
       <Header />
       <GlobalScene />

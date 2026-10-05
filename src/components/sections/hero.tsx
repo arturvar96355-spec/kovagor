@@ -50,8 +50,10 @@ export function Hero() {
         </p>
         <div data-hero-fade>
           <Magnetic>
-            <a href="#contact" data-goal="cta_hero" className="inline-flex items-center gap-3 rounded-full bg-ink px-9 py-5 text-sm uppercase tracking-[0.2em] text-paper transition-colors hover:bg-ink-2">
-              Обсудить проект <span aria-hidden>→</span>
+            <a href="#contact" data-goal="cta_hero" className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-ink px-9 py-5 text-sm uppercase tracking-[0.2em] text-paper">
+              <span aria-hidden className="absolute inset-0 origin-left scale-x-0 bg-ink-2 transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-x-100" />
+              <span className="relative">Обсудить проект</span>
+              <span aria-hidden className="relative transition-transform duration-500 group-hover:translate-x-1.5">→</span>
             </a>
           </Magnetic>
         </div>

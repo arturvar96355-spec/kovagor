@@ -5,7 +5,7 @@
   --color-paper-2: #ebe7dd;
   --color-ink: #1f1f1d;
   --color-ink-2: #3a3a36;
-  --color-mute: #7a7770;
+  --color-mute: #66635c;
   --color-line: #d8d3c6;
   --font-display: var(--font-display), "Times New Roman", serif;
   --font-sans: var(--font-sans), "Arial", sans-serif;
@@ -25,3 +25,18 @@ html.lenis, html.lenis body { height: auto; }
 /* заставка: шапка проявляется, когда фон уезжает */
 header { transition: opacity .8s ease, background-color .5s, padding .5s; }
 html[data-preloading] header { opacity: 0; }
+
+/* доступность: заметный фокус с клавиатуры (на тёмных секциях — светлый) */
+:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; border-radius: 4px; }
+#contact :focus-visible, [role="dialog"] :focus-visible { outline-color: var(--color-paper); }
+.skip-link { position: fixed; left: 16px; top: -64px; z-index: 100; background: var(--color-ink); color: var(--color-paper); padding: 10px 16px; border-radius: 999px; font-size: 13px; transition: top .2s; }
+.skip-link:focus { top: 16px; }
+
+/* бегущий блик по рамке рекомендованного тарифа */
+.shimmer-border { position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%) 0 0 / 250% 100%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: shimmer 4.5s ease-in-out infinite; }
+@keyframes shimmer { 0% { background-position: 150% 0 } 60%, 100% { background-position: -50% 0 } }
+@media (prefers-reduced-motion: reduce) { .shimmer-border { animation: none; opacity: 0 } }

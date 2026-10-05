@@ -19,7 +19,7 @@ export function Manifesto() {
         let split: SplitText | undefined
         document.fonts.ready.then(() => {
           if (!text.current) return
-          split = new SplitText(text.current, { type: 'words', autoSplit: true })
+          split = new SplitText(text.current, { type: 'words', autoSplit: true, aria: 'none' })
           gsap.set(split.words, { opacity: 0.15 })
           gsap.to(split.words, {
             opacity: 1,

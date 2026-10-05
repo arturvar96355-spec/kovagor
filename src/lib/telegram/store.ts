@@ -36,7 +36,24 @@ export class Store {
         created_at INTEGER NOT NULL
       );
       CREATE INDEX IF NOT EXISTS threads_client ON threads(client_chat_id, closed);
+      -- журнал согласий на обработку ПД (152-ФЗ): хранить не менее 3 лет
+      CREATE TABLE IF NOT EXISTS consents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL, contact TEXT NOT NULL,
+        policy_version TEXT NOT NULL, ip_hash TEXT NOT NULL,
+        consented_at INTEGER NOT NULL
+      );
     `)
+  }
+
+  logConsent(c: { name: string; contact: string; policy_version: string; ip_hash: string }): void {
+    this.db
+      .prepare('INSERT INTO consents(name, contact, policy_version, ip_hash, consented_at) VALUES (?,?,?,?,?)')
+      .run(c.name, c.contact, c.policy_version, c.ip_hash, Date.now())
+  }
+
+  listConsents(): { name: string; contact: string; policy_version: string; ip_hash: string; consented_at: number }[] {
+    return this.db.prepare('SELECT name, contact, policy_version, ip_hash, consented_at FROM consents ORDER BY id').all() as never
   }
 
   createLead(l: Omit<Lead, 'id' | 'created_at'>): Lead {

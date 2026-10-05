@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { leadSchema } from '@/lib/schemas'
 import { rateLimit } from '@/lib/rate-limit'
-import { getBot } from '@/lib/telegram'
+import { getBot, getStore } from '@/lib/telegram'
+import { logConsent } from '@/lib/consent-log'
 import { getMailConfig } from '@/lib/email'
 import { deliverLead } from '@/lib/leads-delivery'
 
@@ -31,6 +32,7 @@ export async function POST(req: NextRequest) {
   if (parsed.data.website) return NextResponse.json({ ok: true })
 
   const { name, contact, project, message } = parsed.data
+  logConsent(getStore(), { name, contact, ip })
   const hasPlainTelegram = !!process.env.TELEGRAM_BOT_TOKEN && !!(process.env.TELEGRAM_CHAT_ID ?? process.env.TELEGRAM_GROUP_ID)
 
   const result = await deliverLead(

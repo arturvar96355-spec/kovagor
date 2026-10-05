@@ -28,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={`${display.variable} ${sans.variable}`}>
       <body>
+        <a href="#top" className="skip-link">К содержимому</a>
         <Analytics />
         <Preloader />
         <Cursor />

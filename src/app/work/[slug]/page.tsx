@@ -27,7 +27,7 @@ export default async function CasePage({ params }: Props) {
   return (
     <>
       <Header />
-      <main className="pt-36">
+      <main id="top" className="pt-36">
         <section className="container-x">
           <p className="mb-8 text-xs uppercase tracking-[0.35em] text-mute">{p.kind} · {p.year}</p>
           <SplitReveal as="h1" className="font-display text-[clamp(3rem,10vw,10rem)] leading-[0.95]">{p.title}</SplitReveal>

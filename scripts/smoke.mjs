@@ -32,11 +32,24 @@ for (const [name, opts] of [
     await page.waitForTimeout(2500)
     check(await page.evaluate(() => scrollY > 2000), 'desktop: кнопка «Обсудить проект» ведёт к форме (клики не перехвачены канвасом)')
   }
+  if (name === 'mobile') {
+    await page.click('button:has-text("Только необходимые")').catch(() => {})
+    await page.click('button[aria-label="Меню"]')
+    await page.waitForTimeout(1200)
+    check(await page.locator('#mobile-menu').isVisible(), 'mobile: меню открывается')
+    await page.click('#mobile-menu a:has-text("Тарифы")')
+    await page.waitForTimeout(2500)
+    check(!(await page.locator('#mobile-menu').count()) && (await page.evaluate(() => scrollY > 1000)), 'mobile: пункт меню закрывает его и прокручивает к секции')
+  }
   await page.close()
 }
-for (const path of ['/privacy', '/cookies', '/offer', '/work/pk-strela', '/work/keystone']) {
+for (const path of ['/privacy', '/cookies', '/offer', '/work/pk-strela', '/work/keystone', '/opengraph-image', '/sitemap.xml', '/robots.txt']) {
   const r = await (await browser.newPage()).goto(BASE + path)
   check(r.status() === 200, `${path}: 200`)
+}
+{
+  const r = await (await browser.newPage()).goto(BASE + '/no-such-page')
+  check(r.status() === 404, '/no-such-page: 404')
 }
 await browser.close()
 process.exit(failed ? 1 : 0)

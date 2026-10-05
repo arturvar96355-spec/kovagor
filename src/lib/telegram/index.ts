@@ -3,7 +3,20 @@ import { createApi } from './api'
 import type { Deps } from './bot'
 import { Store } from './store'
 
+let store: Store | null | undefined
 let cached: Deps | null | undefined
+
+/** Общее хранилище (SQLite на постоянном диске). null — диск недоступен (например, serverless). */
+export function getStore(): Store | null {
+  if (store !== undefined) return store
+  try {
+    store = new Store(join(process.env.DATA_DIR ?? './data', 'bot.sqlite'))
+  } catch (e) {
+    console.error('[store] хранилище недоступно', e)
+    store = null
+  }
+  return store
+}
 
 /**
  * Зависимости бота из окружения. null — бот не настроен (тогда заявки идут по упрощённому пути).
@@ -15,20 +28,15 @@ export function getBot(): Deps | null {
   const groupId = Number(process.env.TELEGRAM_GROUP_ID)
   const botUsername = process.env.TELEGRAM_BOT_USERNAME?.replace(/^@/, '')
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET
-  if (!token || !Number.isFinite(groupId) || !groupId || !botUsername || !secret) {
+  const st = getStore()
+  if (!token || !Number.isFinite(groupId) || !groupId || !botUsername || !secret || !st) {
     cached = null
     return cached
   }
-  try {
-    cached = {
-      api: createApi(token),
-      store: new Store(join(process.env.DATA_DIR ?? './data', 'bot.sqlite')),
-      config: { groupId, botUsername, secret, siteUrl: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kovagor.ru').replace(/\/$/, '') },
-    }
-  } catch (e) {
-    // нет постоянного диска (serverless): переписка невозможна, заявки уходят простым сообщением в группу
-    console.error('[telegram] хранилище недоступно, бот работает в упрощённом режиме', e)
-    cached = null
+  cached = {
+    api: createApi(token),
+    store: st,
+    config: { groupId, botUsername, secret, siteUrl: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kovagor.ru').replace(/\/$/, '') },
   }
   return cached
 }

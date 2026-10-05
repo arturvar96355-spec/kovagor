@@ -10,7 +10,7 @@ import { SplitReveal } from '@/components/motion/split-reveal'
 import { Reveal } from '@/components/motion/reveal'
 import { goal } from '@/lib/analytics'
 
-const input = 'peer w-full bg-transparent py-4 text-lg text-paper outline-none placeholder:text-paper/45'
+const input = 'peer w-full bg-transparent py-4 text-lg text-paper outline-none placeholder:text-paper/60'
 const EASE = [0.16, 1, 0.3, 1] as const
 
 /** Поле с «прорисовывающейся» линией: при фокусе светлая линия заполняет подчёркивание слева направо; ошибка трясёт поле. */
@@ -124,7 +124,7 @@ export function Contact() {
           <SplitReveal as="h2" className="font-display text-[clamp(3rem,7vw,7rem)] leading-[0.95]">
             Расскажите о проекте
           </SplitReveal>
-          <p className="mt-8 max-w-md text-lg opacity-70">Ответим в течение рабочего дня и предложим формат Discovery-спринта.</p>
+          <p className="mt-8 max-w-md text-lg opacity-70">Ответим в течение рабочего дня, уточним задачу и назовём стоимость.</p>
           <div className="mt-10 space-y-2 text-lg">
             <a href={site.telegram} data-goal="contact_telegram" className="block underline-offset-4 hover:underline">Telegram</a>
             <a href={`mailto:${site.email}`} data-goal="contact_email" className="block underline-offset-4 hover:underline">{site.email}</a>
@@ -141,13 +141,13 @@ export function Contact() {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                   <input type="text" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden {...register('website')} />
                   <Field error={errors.name?.message} shakeKey={submitCount}>
-                    <input className={input} placeholder="Ваше имя" {...register('name')} />
+                    <input className={input} placeholder="Ваше имя" aria-label="Ваше имя" autoComplete="name" {...register('name')} />
                   </Field>
                   <Field error={errors.contact?.message} shakeKey={submitCount}>
-                    <input className={input} placeholder="Telegram, телефон или email" {...register('contact')} />
+                    <input className={input} placeholder="Telegram, телефон или email" aria-label="Telegram, телефон или email" autoComplete="email" {...register('contact')} />
                   </Field>
                   <Field shakeKey={submitCount}>
-                    <select className={`${input} [&>option]:text-ink`} {...register('project')}>
+                    <select className={`${input} [&>option]:text-ink`} aria-label="Тариф" {...register('project')}>
                       <option value="other">Тариф пока не выбран</option>
                       <option value="landing">Лендинг</option>
                       <option value="studio">Сайт-студия</option>
@@ -155,7 +155,7 @@ export function Contact() {
                     </select>
                   </Field>
                   <Field shakeKey={submitCount}>
-                    <textarea className={input} rows={3} placeholder="Коротко о задаче" {...register('message')} />
+                    <textarea className={input} rows={3} placeholder="Коротко о задаче" aria-label="Коротко о задаче" {...register('message')} />
                   </Field>
                   <div data-stagger>
                     <label className="flex items-start gap-3 text-sm opacity-70">

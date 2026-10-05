@@ -39,6 +39,7 @@ export function Pricing() {
         {tariffs.map((t) => (
           <div key={t.id} data-tariff className="flex">
           <TiltCard className={`flex flex-1 flex-col rounded-3xl p-8 md:p-10 ${t.featured ? 'bg-ink text-paper' : 'border border-line bg-paper-2'}`}>
+            {t.featured && <span aria-hidden className="shimmer-border" />}
             <div className="flex items-center justify-between">
               <h3 className="font-display text-4xl">{t.name}</h3>
               {t.featured && <span className="rounded-full border border-paper/40 px-3 py-1 text-[10px] uppercase tracking-[0.2em]">Рекомендуем</span>}
