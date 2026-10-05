@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { site } from '@/content/site'
+import { CookieSettingsButton } from './cookie-settings-button'
 
 export function Footer() {
   return (
@@ -10,6 +11,7 @@ export function Footer() {
           <Link href="/privacy" className="hover:underline">Политика конфиденциальности</Link>
           <Link href="/cookies" className="hover:underline">Cookie</Link>
           <Link href="/offer" className="hover:underline">Оферта</Link>
+          <CookieSettingsButton />
         </nav>
       </div>
     </footer>

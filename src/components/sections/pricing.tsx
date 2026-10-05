@@ -51,7 +51,7 @@ export function Pricing() {
                 <li key={i} className="flex gap-3"><span aria-hidden>—</span>{i}</li>
               ))}
             </ul>
-            <a href="#contact" onClick={() => window.dispatchEvent(new CustomEvent("pick-tariff", { detail: t.id }))} className={`mt-10 rounded-full px-6 py-4 text-center text-xs uppercase tracking-[0.2em] transition-colors ${t.featured ? 'bg-paper text-ink hover:bg-paper-2' : 'bg-ink text-paper hover:bg-ink-2'}`}>
+            <a href="#contact" data-goal="tariff_click" data-goal-param={t.id} onClick={() => window.dispatchEvent(new CustomEvent("pick-tariff", { detail: t.id }))} className={`mt-10 rounded-full px-6 py-4 text-center text-xs uppercase tracking-[0.2em] transition-colors ${t.featured ? 'bg-paper text-ink hover:bg-paper-2' : 'bg-ink text-paper hover:bg-ink-2'}`}>
               Выбрать
             </a>
           </TiltCard>

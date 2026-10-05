@@ -28,7 +28,7 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <Link href="/#contact" className="rounded-full border border-ink px-5 py-2 text-xs uppercase tracking-[0.2em] transition-colors hover:bg-ink hover:text-paper">
+        <Link href="/#contact" data-goal="cta_header" className="rounded-full border border-ink px-5 py-2 text-xs uppercase tracking-[0.2em] transition-colors hover:bg-ink hover:text-paper">
           Заявка
         </Link>
       </div>

@@ -8,6 +8,7 @@ import { leadSchema, type LeadInput } from '@/lib/schemas'
 import { site } from '@/content/site'
 import { SplitReveal } from '@/components/motion/split-reveal'
 import { Reveal } from '@/components/motion/reveal'
+import { goal } from '@/lib/analytics'
 
 const input = 'peer w-full bg-transparent py-4 text-lg text-paper outline-none placeholder:text-paper/45'
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -90,6 +91,7 @@ export function Contact() {
       const r = await fetch('/api/lead', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) })
       const j = await r.json().catch(() => ({}))
       if (r.ok && j.ok) {
+        goal('form_submit', { tariff: data.project ?? 'other' })
         setSent(true)
         reset()
       } else setServerError(j.error ?? 'Ошибка отправки. Напишите нам в Telegram.')
@@ -108,8 +110,8 @@ export function Contact() {
           </SplitReveal>
           <p className="mt-8 max-w-md text-lg opacity-70">Ответим в течение рабочего дня и предложим формат Discovery-спринта.</p>
           <div className="mt-10 space-y-2 text-lg">
-            <a href={site.telegram} className="block underline-offset-4 hover:underline">Telegram</a>
-            <a href={`mailto:${site.email}`} className="block underline-offset-4 hover:underline">{site.email}</a>
+            <a href={site.telegram} data-goal="contact_telegram" className="block underline-offset-4 hover:underline">Telegram</a>
+            <a href={`mailto:${site.email}`} data-goal="contact_email" className="block underline-offset-4 hover:underline">{site.email}</a>
           </div>
         </div>
 

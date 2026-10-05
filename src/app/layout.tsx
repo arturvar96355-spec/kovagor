@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Inter } from 'next/font/google'
 import { SmoothScroll } from '@/components/motion/smooth-scroll'
+import { Analytics } from '@/components/analytics'
 import { Cursor } from '@/components/motion/cursor'
 import { Preloader } from '@/components/motion/preloader'
 import './globals.css'
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={`${display.variable} ${sans.variable}`}>
       <body>
+        <Analytics />
         <Preloader />
         <Cursor />
         <SmoothScroll />

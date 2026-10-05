@@ -10,7 +10,7 @@ export function Work() {
       <SectionHead index="04" label="Проекты" title="Нам доверяли" />
       <Reveal className="mx-auto max-w-5xl">
         {projects.map((p) => (
-          <Link key={p.slug} href={`/work/${p.slug}`} data-stagger className="group flex items-baseline justify-between gap-6 border-b border-line py-7 first:border-t">
+          <Link key={p.slug} href={`/work/${p.slug}`} data-goal="case_open" data-goal-param={p.slug} data-stagger className="group flex items-baseline justify-between gap-6 border-b border-line py-7 first:border-t">
             <span className="font-display text-3xl transition-transform duration-500 group-hover:translate-x-3 md:text-5xl">{p.title}</span>
             <span className="flex items-center gap-4 text-sm uppercase tracking-[0.2em] text-mute">
               <span className="hidden sm:inline">{p.kind}</span>
