@@ -27,7 +27,8 @@ export function GlobalScene() {
     if (!enabled) return
     registerGsap()
     // во время заставки монограмма появляется сразу (на тёмном фоне), иначе — после паузы под заставку
-    sceneInput.startAt = performance.now() / 1000 + (sceneInput.preloading ? 0.15 : preloadDelay())
+    sceneInput.startAt = Infinity
+    sceneInput.introDelay = sceneInput.preloading ? 0 : preloadDelay()
     const cleanup = bindScenePoses()
     const move = (e: PointerEvent) => {
       sceneInput.px = (e.clientX / window.innerWidth) * 2 - 1

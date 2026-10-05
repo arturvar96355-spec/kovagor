@@ -69,6 +69,7 @@ export function Preloader() {
       }
 
       // --- режим 3D: фон заставки лежит под WebGL-канвасом, монограмму рисует сцена ---
+      void import('@/components/three/monogram-scene') // тяжёлый чанк начинает грузиться сразу, а не после гидратации сцены
       sceneInput.preloading = true
       Object.assign(pose, PRELOAD_POSE)
       gsap.set(el, { zIndex: 15 })

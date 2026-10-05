@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, registerGsap } from '@/lib/animation'
 import { inside } from '@/content/inside'
+import { InsideArt } from './inside-art'
 import { SectionHead } from '@/components/motion/section-head'
 
 /**
@@ -59,16 +60,22 @@ export function Inside() {
   return (
     <section ref={root} id="inside" className="relative overflow-hidden border-t border-line py-[10vh] min-[900px]:flex min-[900px]:min-h-svh min-[900px]:flex-col min-[900px]:justify-center min-[900px]:py-0">
       <div className="container-x min-[900px]:pt-24">
-        <SectionHead index="04" label="Внутри" title="Что внутри этого сайта" />
-        <p className="-mt-10 mb-12 max-w-xl text-lg text-ink-2 min-[900px]:mb-14">Сайт студии — наша визитка. Всё, что вы видите и чувствуете, можно сделать и для вашего проекта.</p>
+        <SectionHead index="04" label="Фишки" title="Фишки, которые можно забрать себе" />
+        <p className="-mt-10 mb-12 max-w-xl text-lg text-ink-2 min-[900px]:mb-14">Этот сайт — наша визитка и полигон. Каждая фишка здесь работает по-настоящему, и каждую можно перенести на ваш проект.</p>
       </div>
       <div ref={track} className="container-x grid gap-5 min-[900px]:flex min-[900px]:w-max min-[900px]:gap-6 min-[900px]:pb-24">
         {inside.map((c) => (
-          <article key={c.n} data-inside-card className="flex flex-col justify-between rounded-3xl border border-line bg-paper-2 p-8 min-[900px]:h-[44vh] min-[900px]:min-h-[320px] min-[900px]:w-[min(62vw,560px)] min-[900px]:p-10">
-            <span className="font-display text-xl text-mute">{c.n}</span>
+          <article key={c.n} data-inside-card className="group flex flex-col justify-between gap-6 rounded-3xl border border-line bg-paper-2 p-6 transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(.16,1,.3,1)] hover:-translate-y-2 hover:shadow-[0_24px_50px_-24px_rgba(31,31,29,.35)] min-[900px]:h-[56vh] min-[900px]:min-h-[430px] min-[900px]:w-[min(62vw,520px)] min-[900px]:p-8">
             <div>
-              <h3 className="font-display text-4xl leading-tight min-[900px]:text-5xl">{c.title}</h3>
-              <p className="mt-4 max-w-md text-lg leading-relaxed text-ink-2">{c.text}</p>
+              <div className="mb-5 flex items-center justify-between">
+                <span className="font-display text-xl text-mute">{c.n}</span>
+                <span className="rounded-full border border-ink/30 px-3 py-1 text-[11px] uppercase tracking-[0.2em]">{c.tag}</span>
+              </div>
+              <InsideArt kind={c.art} />
+            </div>
+            <div>
+              <h3 className="font-display text-3xl leading-tight min-[900px]:text-4xl">{c.title}</h3>
+              <p className="mt-3 max-w-md text-base leading-relaxed text-ink-2">{c.text}</p>
             </div>
           </article>
         ))}

@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
+import { Environment, Lightformer, PerformanceMonitor, Preload } from '@react-three/drei'
 import * as THREE from 'three'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
 import { MONOGRAM_PATHS } from '@/components/brand-paths'
@@ -22,11 +22,11 @@ function buildGeometry() {
   }
   const geo = new THREE.ExtrudeGeometry(shapes, {
     depth: 70,
-    curveSegments: 20,
+    curveSegments: 14,
     bevelEnabled: true,
     bevelThickness: 7,
     bevelSize: 4,
-    bevelSegments: 4,
+    bevelSegments: 3,
   })
   geo.computeBoundingBox()
   const box = geo.boundingBox!
@@ -54,8 +54,9 @@ function buildGeometry() {
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t))
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 
-function Monogram() {
+function Monogram({ onWarm }: { onWarm: () => void }) {
   const group = useRef<THREE.Group>(null)
+  const frames = useRef(0)
   const mat = useRef<THREE.MeshPhysicalMaterial>(null)
   const spin = useRef(0) // инерционный довесок вращения от скорости скролла
   const geometry = useMemo(() => buildGeometry(), [])
@@ -63,6 +64,17 @@ function Monogram() {
   useFrame((state, dt) => {
     const g = group.current
     if (!g) return
+    // Прогрев: сначала сцена невидима и компилируются шейдеры/строится окружение (Preload), и только после пары кадров
+    // стартует вступление. Тогда тяжёлая работа не попадает на глаза и не «подлагивает» анимацию появления.
+    if (frames.current < 3) {
+      frames.current++
+      if (frames.current === 3) {
+        sceneInput.startAt = performance.now() / 1000 + (sceneInput.preloading ? 0.15 : sceneInput.introDelay)
+        g.visible = true
+        onWarm()
+      }
+      return
+    }
     const t = state.clock.elapsedTime
     const now = performance.now() / 1000
     const intro = easeOutExpo(clamp((now - sceneInput.startAt) / 2.2, 0, 1))
@@ -93,7 +105,7 @@ function Monogram() {
   })
 
   return (
-    <group ref={group}>
+    <group ref={group} visible={false}>
       <mesh geometry={geometry}>
         <meshPhysicalMaterial ref={mat} color="#1b1b19" roughness={0.26} metalness={0.7} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={1.7} />
       </mesh>
@@ -102,7 +114,7 @@ function Monogram() {
 }
 
 export default function MonogramScene({ active, onReady }: { active: boolean; onReady: () => void }) {
-  const [dpr, setDpr] = useState(1.5)
+  const [dpr, setDpr] = useState(1.25)
   return (
     <Canvas
       dpr={dpr}
@@ -110,13 +122,12 @@ export default function MonogramScene({ active, onReady }: { active: boolean; on
       frameloop={active ? 'always' : 'never'}
       camera={{ position: [0, 0, 7], fov: 32 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-      onCreated={onReady}
     >
       {/* слабое устройство → снижаем разрешение рендера, мощное → поднимаем */}
-      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(2)} />
+      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.75)} />
       <ambientLight intensity={0.35} />
       <directionalLight position={[3, 4, 5]} intensity={1.1} />
-      <Environment resolution={256}>
+      <Environment resolution={192}>
         {/* студийный свет без внешних HDRI. Крупный софтбокс спереди-сверху даёт на лицевой грани чёткий переход
             «светлая верхняя часть → тёмная нижняя»: так плоскость читается объёмной даже в покое */}
         <Lightformer form="rect" intensity={2.2} position={[0, 3.6, 8]} scale={[16, 6, 1]} color="#f4f1ea" />
@@ -126,7 +137,8 @@ export default function MonogramScene({ active, onReady }: { active: boolean; on
         <Lightformer form="rect" intensity={2.2} position={[5, -1, 3]} scale={[1.5, 6, 1]} color="#ffe9cf" />
         <Lightformer form="ring" intensity={1.5} position={[0, 0, -5]} scale={8} />
       </Environment>
-      <Monogram />
+      <Monogram onWarm={onReady} />
+      <Preload all />
     </Canvas>
   )
 }

@@ -11,7 +11,7 @@ Next.js 16 (App Router, Turbopack) · React 19 · TypeScript · Tailwind v4 · G
 
 ## Структура
 - `src/app` — страницы, `api/lead` (приём заявок), `api/telegram` (вебхук бота), OG/иконки.
-- `src/components/motion` — анимационные примитивы (SplitReveal, Reveal, Magnetic, TiltCard, Marquee, Cursor, Preloader, PageCurtain, SmoothScroll, SectionHead, useSpotlight).
+- `src/components/motion` — анимационные примитивы (SplitReveal, Reveal, Magnetic, TiltCard, Marquee, Cursor, Preloader, SmoothScroll, SectionHead, useSpotlight).
 - `src/components/three` — единая WebGL-сцена: `poses.ts` (поза монограммы по секциям), `bind-poses.ts` (ScrollTrigger), `monogram-scene.tsx`.
 - `src/components/sections` — секции главной; `src/content` — весь текст/данные (тарифы, FAQ, проекты, процесс).
 - `src/lib/telegram` — бот (заявки → темы группы, переписка менеджер ↔ клиент), `leads-delivery.ts` (Telegram + email параллельно), `consent-log.ts` (журнал согласий 152-ФЗ).

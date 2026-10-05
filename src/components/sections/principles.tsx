@@ -18,17 +18,17 @@ export function Principles() {
   return (
     <section ref={root} id="principles" className="spot relative overflow-hidden bg-ink px-[clamp(20px,4vw,64px)] py-[16vh] text-paper">
       <div className="mx-auto max-w-7xl">
-        <SectionHead index="02" label="Принципы" title="Как мы думаем" dark />
-        <div className="grid gap-x-16 gap-y-20 md:grid-cols-2">
+        <SectionHead index="02" label="Принципы" title="Как мы делаем сайты" dark />
+        <div className="grid gap-x-16 gap-y-16 md:grid-cols-2 xl:grid-cols-3">
           {principles.map((p) => (
             <div key={p.n} data-spot-item className="relative">
               {/* нижний слой — приглушённый */}
               <div className="spot-base">
-                <PrincipleBody n={p.n} title={p.title} text={p.text} />
+                <PrincipleBody p={p} />
               </div>
               {/* верхний слой — яркий, виден в круге у курсора */}
               <div aria-hidden className="spot-top absolute inset-0">
-                <PrincipleBody n={p.n} title={p.title} text={p.text} />
+                <PrincipleBody p={p} />
               </div>
             </div>
           ))}
@@ -38,12 +38,16 @@ export function Principles() {
   )
 }
 
-function PrincipleBody({ n, title, text }: { n: string; title: string; text: string }) {
+function PrincipleBody({ p }: { p: (typeof principles)[number] }) {
   return (
     <>
-      <span className="font-display text-xl">{n}</span>
-      <h3 className="mt-2 font-display text-5xl leading-tight md:text-6xl">{title}</h3>
-      <p className="mt-4 max-w-md text-lg leading-relaxed">{text}</p>
+      <span className="font-display text-xl">{p.n}</span>
+      <h3 className="mt-2 font-display text-4xl leading-tight md:text-5xl">{p.title}</h3>
+      <p className="mt-4 max-w-md text-base leading-relaxed">{p.how}</p>
+      <p className="mt-4 max-w-md border-t border-current/25 pt-4 text-base leading-relaxed">
+        <span className="mb-1 block text-xs uppercase tracking-[0.25em]">Что это даёт</span>
+        {p.gain}
+      </p>
     </>
   )
 }

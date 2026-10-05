@@ -55,3 +55,26 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 5; pointer-events
 .scroll-cue { animation: scroll-cue 2.2s cubic-bezier(.65,0,.35,1) infinite; }
 @keyframes scroll-cue { 0% { transform: translateY(-100%) } 60%, 100% { transform: translateY(220%) } }
 @media (prefers-reduced-motion: reduce) { .scroll-cue { animation: none } }
+
+/* мини-иллюстрации карточек «Фишки»: только transform/opacity; при reduced-motion — статичная картинка */
+@keyframes art-spin { to { transform: rotate(360deg) } }
+@keyframes art-spin-rev { to { transform: rotate(-360deg) } }
+@keyframes art-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+@keyframes art-lines { 0% { transform: translateY(0) } 100% { transform: translateY(-50%) } }
+@keyframes art-fly { 0% { transform: translateX(0); opacity: 0 } 15% { opacity: 1 } 85% { opacity: 1 } 100% { transform: translateX(var(--fly, 120px)); opacity: 0 } }
+@keyframes art-knob { 0%, 40% { transform: translateX(0) } 55%, 90% { transform: translateX(28px) } 100% { transform: translateX(0) } }
+@keyframes art-fill { 0% { transform: scaleX(.05) } 70%, 100% { transform: scaleX(1) } }
+@keyframes art-ring { 0%, 100% { transform: translate(0, 0) } 33% { transform: translate(64px, 0) } 66% { transform: translate(64px, 36px) } }
+@keyframes art-pulse { 0%, 100% { transform: scale(1); opacity: .5 } 50% { transform: scale(1.5); opacity: 0 } }
+.art-spin { animation: art-spin 14s linear infinite }
+.art-spin-rev { animation: art-spin-rev 9s linear infinite }
+.art-float { animation: art-float 4s ease-in-out infinite }
+.art-lines { animation: art-lines 5s linear infinite }
+.art-fly { animation: art-fly 2.4s ease-in-out infinite }
+.art-knob { animation: art-knob 5s cubic-bezier(.65,0,.35,1) infinite }
+.art-fill { transform-origin: left; animation: art-fill 3.2s cubic-bezier(.65,0,.35,1) infinite }
+.art-ring { animation: art-ring 6s cubic-bezier(.65,0,.35,1) infinite }
+.art-pulse { animation: art-pulse 2.4s ease-out infinite }
+@media (prefers-reduced-motion: reduce) {
+  .art-spin, .art-spin-rev, .art-float, .art-lines, .art-fly, .art-knob, .art-fill, .art-ring, .art-pulse { animation: none }
+}
