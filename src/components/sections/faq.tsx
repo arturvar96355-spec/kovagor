@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { faq } from '@/content/faq'
+import { SectionHead } from '@/components/motion/section-head'
 
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0)
   return (
     <section id="faq" className="container-x border-t border-line py-[14vh]">
-      <p className="mb-14 text-xs uppercase tracking-[0.35em] text-mute">Вопросы</p>
+      <SectionHead index="05" label="FAQ" title="Частые вопросы" />
       <div className="mx-auto max-w-4xl">
         {faq.map((f, i) => {
           const isOpen = open === i

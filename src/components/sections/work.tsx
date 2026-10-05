@@ -1,54 +1,24 @@
-'use client'
-
-import { useRef } from 'react'
 import Link from 'next/link'
-import { useGSAP } from '@gsap/react'
-import { gsap, ease, registerGsap, NO_REDUCED_MOTION } from '@/lib/animation'
 import { projects } from '@/content/projects'
+import { SectionHead } from '@/components/motion/section-head'
+import { Reveal } from '@/components/motion/reveal'
 
+/** Портфолио — спокойный список без крупных кадров: подтверждает опыт, не перетягивает внимание с услуг и тарифов. */
 export function Work() {
-  const root = useRef<HTMLElement>(null)
-  useGSAP(
-    () => {
-      registerGsap()
-      const mm = gsap.matchMedia()
-      mm.add(NO_REDUCED_MOTION, () => {
-        gsap.utils.toArray<HTMLElement>('[data-work]').forEach((el) => {
-          const media = el.querySelector('[data-media]')
-          gsap.fromTo(el, { clipPath: 'inset(18% 12% 18% 12% round 24px)' }, {
-            clipPath: 'inset(0% 0% 0% 0% round 24px)',
-            ease: ease.inOut,
-            scrollTrigger: { trigger: el, start: 'top 90%', end: 'top 35%', scrub: true },
-          })
-          gsap.fromTo(media, { scale: 1.25 }, {
-            scale: 1,
-            ease: 'none',
-            scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true },
-          })
-        })
-      })
-    },
-    { scope: root },
-  )
   return (
-    <section ref={root} id="work" className="container-x border-t border-line py-[14vh]">
-      <div className="mb-14 flex items-end justify-between">
-        <p className="text-xs uppercase tracking-[0.35em] text-mute">Избранные работы</p>
-        <span className="font-display text-xl text-mute">({String(projects.length).padStart(2, '0')})</span>
-      </div>
-      <div className="flex flex-col gap-[10vh]">
+    <section id="work" className="container-x border-t border-line py-[14vh]">
+      <SectionHead index="04" label="Проекты" title="Нам доверяли" />
+      <Reveal className="mx-auto max-w-5xl">
         {projects.map((p) => (
-          <Link key={p.slug} href={`/work/${p.slug}`} className="group block" data-cursor="Смотреть">
-            <div data-work className="relative aspect-[16/9] overflow-hidden rounded-3xl">
-              <div data-media className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.03]" style={{ background: p.tone }} />
-            </div>
-            <div className="mt-6 flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="font-display text-4xl md:text-6xl">{p.title}</h3>
-              <p className="text-sm uppercase tracking-[0.2em] text-mute">{p.kind} · {p.year}</p>
-            </div>
+          <Link key={p.slug} href={`/work/${p.slug}`} data-stagger className="group flex items-baseline justify-between gap-6 border-b border-line py-7 first:border-t">
+            <span className="font-display text-3xl transition-transform duration-500 group-hover:translate-x-3 md:text-5xl">{p.title}</span>
+            <span className="flex items-center gap-4 text-sm uppercase tracking-[0.2em] text-mute">
+              <span className="hidden sm:inline">{p.kind}</span>
+              <span aria-hidden className="transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1">↗</span>
+            </span>
           </Link>
         ))}
-      </div>
+      </Reveal>
     </section>
   )
 }

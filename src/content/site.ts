@@ -5,9 +5,9 @@ export const site = {
   email: 'hello@kovagor.ru',
   nav: [
     { href: '/#services', label: 'Услуги' },
-    { href: '/#work', label: 'Работы' },
     { href: '/#process', label: 'Процесс' },
     { href: '/#pricing', label: 'Тарифы' },
+    { href: '/#work', label: 'Проекты' },
     { href: '/#faq', label: 'FAQ' },
   ],
 } as const

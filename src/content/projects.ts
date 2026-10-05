@@ -5,11 +5,13 @@ export type Project = {
   kind: string
   year: string
   tone: string
-  task: string
-  solution: string
-  stack: string[]
+  task?: string
+  solution?: string
+  stack?: string[]
   url?: string
-  results: { value: string; label: string }[]
+  /** Скриншот кейса (public/...). Пока нет — блок с изображением не показывается. */
+  image?: string
+  results?: { value: string; label: string }[]
 }
 
 export const projects: Project[] = [
@@ -35,20 +37,7 @@ export const projects: Project[] = [
     year: '2026',
     tone: '#3a3a36',
     url: 'https://keystone-kv7e209bj-varde.vercel.app',
-    task: 'TODO(content): задача клиента.',
-    solution: 'TODO(content): что сделали.',
-    stack: ['Next.js'], // TODO(content)
-    results: [{ value: '—', label: 'метрика' }],
-  },
-  {
-    slug: 'demo-2', title: 'Кейс №2', kind: 'Лендинг', year: '2026', tone: '#6b6558',
-    task: 'TODO(content): задача клиента.', solution: 'TODO(content): что сделали.', stack: ['Next.js', 'GSAP'],
-    results: [{ value: '—', label: 'метрика' }],
-  },
-  {
-    slug: 'demo-3', title: 'Кейс №3', kind: 'Сайт-визитка', year: '2026', tone: '#b8b09c',
-    task: 'TODO(content): задача клиента.', solution: 'TODO(content): что сделали.', stack: ['Next.js', 'Motion'],
-    results: [{ value: '—', label: 'метрика' }],
+    // TODO(content): task, solution, stack, results — блоки появятся на странице, когда поля будут заполнены
   },
 ]
 

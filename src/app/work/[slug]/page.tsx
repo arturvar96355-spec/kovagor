@@ -33,39 +33,62 @@ export default async function CasePage({ params }: Props) {
           <SplitReveal as="h1" className="font-display text-[clamp(3rem,10vw,10rem)] leading-[0.95]">{p.title}</SplitReveal>
         </section>
 
-        <div className="container-x mt-16">
-          <div className="aspect-[16/8] rounded-3xl" style={{ background: p.tone }} />
-        </div>
-
-        <Reveal className="container-x grid gap-16 py-[14vh] lg:grid-cols-2">
-          <div data-stagger>
-            <p className="mb-4 text-xs uppercase tracking-[0.35em] text-mute">Задача</p>
-            <p className="font-display text-3xl leading-snug md:text-4xl">{p.task}</p>
+        {p.image && (
+          <div className="container-x mt-16">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={p.image} alt={p.title} className="w-full rounded-3xl" />
           </div>
-          <div data-stagger>
-            <p className="mb-4 text-xs uppercase tracking-[0.35em] text-mute">Решение</p>
-            <p className="text-lg leading-relaxed text-ink-2">{p.solution}</p>
-            <ul className="mt-8 flex flex-wrap gap-2">
-              {p.stack.map((s) => (
-                <li key={s} className="rounded-full border border-line px-4 py-2 text-sm">{s}</li>
-              ))}
-            </ul>
-            {p.url && (
-              <a href={p.url} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-3 border-b border-ink pb-1 text-sm uppercase tracking-[0.2em]">
-                Открыть сайт <span aria-hidden>↗</span>
-              </a>
+        )}
+
+        {(p.task || p.solution) && (
+          <Reveal className="container-x grid gap-16 py-[14vh] lg:grid-cols-2">
+            {p.task && (
+              <div data-stagger>
+                <p className="mb-4 text-xs uppercase tracking-[0.35em] text-mute">Задача</p>
+                <p className="font-display text-3xl leading-snug md:text-4xl">{p.task}</p>
+              </div>
             )}
-          </div>
-        </Reveal>
-
-        <Reveal className="container-x grid gap-px border-y border-line py-[10vh] md:grid-cols-3">
-          {p.results.map((r) => (
-            <div key={r.label} data-stagger className="py-6">
-              <p className="font-display text-7xl">{r.value}</p>
-              <p className="mt-2 text-sm uppercase tracking-[0.2em] text-mute">{r.label}</p>
+            <div data-stagger>
+              {p.solution && (
+                <>
+                  <p className="mb-4 text-xs uppercase tracking-[0.35em] text-mute">Решение</p>
+                  <p className="text-lg leading-relaxed text-ink-2">{p.solution}</p>
+                </>
+              )}
+              {p.stack && (
+                <ul className="mt-8 flex flex-wrap gap-2">
+                  {p.stack.map((s) => (
+                    <li key={s} className="rounded-full border border-line px-4 py-2 text-sm">{s}</li>
+                  ))}
+                </ul>
+              )}
+              {p.url && (
+                <a href={p.url} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-3 border-b border-ink pb-1 text-sm uppercase tracking-[0.2em]">
+                  Открыть сайт <span aria-hidden>↗</span>
+                </a>
+              )}
             </div>
-          ))}
-        </Reveal>
+          </Reveal>
+        )}
+
+        {!p.task && !p.solution && p.url && (
+          <div className="container-x py-[10vh]">
+            <a href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 border-b border-ink pb-1 text-sm uppercase tracking-[0.2em]">
+              Открыть сайт <span aria-hidden>↗</span>
+            </a>
+          </div>
+        )}
+
+        {p.results && (
+          <Reveal className="container-x grid gap-px border-y border-line py-[10vh] md:grid-cols-3">
+            {p.results.map((r) => (
+              <div key={r.label} data-stagger className="py-6">
+                <p className="font-display text-7xl">{r.value}</p>
+                <p className="mt-2 text-sm uppercase tracking-[0.2em] text-mute">{r.label}</p>
+              </div>
+            ))}
+          </Reveal>
+        )}
 
         <Link href={`/work/${next.slug}`} className="container-x group block py-[14vh]">
           <p className="mb-4 text-xs uppercase tracking-[0.35em] text-mute">Следующий кейс</p>

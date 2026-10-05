@@ -21,9 +21,9 @@ export default function Home() {
         <Manifesto />
         <Marquee items={['Сайты', 'Анимации', 'Брендинг', 'Запуск']} />
         <Services />
-        <Work />
         <Process />
         <Pricing />
+        <Work />
         <Faq />
         <Contact />
       </main>

@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, registerGsap, NO_REDUCED_MOTION } from '@/lib/animation'
 import { services } from '@/content/services'
+import { SectionHead } from '@/components/motion/section-head'
 
 /** Карточки «залипают» стопкой; предыдущая уменьшается и тускнеет, когда на неё наезжает следующая. */
 export function Services() {
@@ -29,7 +30,7 @@ export function Services() {
   )
   return (
     <section ref={root} id="services" className="container-x border-t border-line py-[14vh]">
-      <p className="mb-14 text-xs uppercase tracking-[0.35em] text-mute">Что мы делаем</p>
+      <SectionHead index="01" label="Услуги" title="Что мы делаем" />
       {services.map((s, i) => (
         <div key={s.n} data-card className="sticky" style={{ top: `${12 + i * 2}vh`, paddingBottom: '4vh' }}>
           <div className="grid gap-6 rounded-3xl border border-line bg-paper-2 shadow-[0_-20px_40px_-30px_rgba(0,0,0,0.25)] p-8 md:grid-cols-[120px_1fr_1fr] md:p-14">
