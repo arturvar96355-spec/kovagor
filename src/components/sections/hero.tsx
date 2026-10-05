@@ -1,15 +1,18 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
-import { gsap, ease, registerGsap, NO_REDUCED_MOTION } from '@/lib/animation'
+import { gsap, ScrollTrigger, ease, registerGsap, NO_REDUCED_MOTION } from '@/lib/animation'
 import { PRELOAD_KEY } from '@/components/motion/preloader'
 import { Monogram } from '@/components/brand'
 import { SplitReveal } from '@/components/motion/split-reveal'
 import { Magnetic } from '@/components/motion/magnetic'
+import { Hero3D } from '@/components/three/hero-3d'
+import { heroScene } from '@/components/three/state'
 
 export function Hero() {
   const root = useRef<HTMLElement>(null)
+  const [ready3d, setReady3d] = useState(false)
 
   useGSAP(
     () => {
@@ -17,8 +20,17 @@ export function Hero() {
       let seen = true
       try { seen = sessionStorage.getItem(PRELOAD_KEY) === '1' } catch {}
       const d = seen ? 0 : 1.6 // ждём окончания заставки
+      heroScene.startAt = performance.now() / 1000 + d
       const mm = gsap.matchMedia()
       mm.add(NO_REDUCED_MOTION, () => {
+        // прогресс прокрутки → WebGL-сцена
+        ScrollTrigger.create({
+          trigger: root.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+          onUpdate: (self) => (heroScene.progress = self.progress),
+        })
         // монограмма: контуры проявляются по очереди
         gsap.from('[data-mono-path]', {
           opacity: 0,
@@ -42,13 +54,16 @@ export function Hero() {
 
   return (
     <section ref={root} className="container-x relative flex min-h-svh flex-col justify-between overflow-hidden pb-10 pt-28">
-      <div data-mono-wrap className="pointer-events-none absolute right-[-4vw] top-1/2 w-[62vw] max-w-[900px] -translate-y-1/2 text-ink/[0.07]">
+      <div data-mono-wrap className={`pointer-events-none absolute right-[-4vw] top-1/2 w-[62vw] max-w-[900px] -translate-y-1/2 text-ink/[0.07] transition-opacity duration-700 ${ready3d ? 'opacity-0' : 'opacity-100'}`}>
         <Monogram />
       </div>
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-[46vw]">
+        <Hero3D onReady={() => setReady3d(true)} />
+      </div>
 
-      <div className="relative z-10 mt-[10vh] max-w-5xl">
+      <div className="relative z-10 mt-[10vh] max-w-5xl lg:max-w-[58vw]">
         <p data-hero-fade className="mb-8 text-xs uppercase tracking-[0.35em] text-mute">Студия сайтов под ключ</p>
-        <SplitReveal as="h1" delay={(() => { try { return sessionStorage.getItem(PRELOAD_KEY) === "1" ? 0 : 1.6 } catch { return 0 } })()} className="font-display text-[clamp(3rem,9vw,9rem)] font-medium leading-[0.95] tracking-tight">
+        <SplitReveal as="h1" delay={(() => { try { return sessionStorage.getItem(PRELOAD_KEY) === "1" ? 0 : 1.6 } catch { return 0 } })()} className="font-display text-[clamp(3rem,7.6vw,8.5rem)] font-medium leading-[0.95] tracking-tight">
           Сайты, которые продают ещё до первого звонка
         </SplitReveal>
       </div>

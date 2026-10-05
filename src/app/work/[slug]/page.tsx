@@ -50,6 +50,11 @@ export default async function CasePage({ params }: Props) {
                 <li key={s} className="rounded-full border border-line px-4 py-2 text-sm">{s}</li>
               ))}
             </ul>
+            {p.url && (
+              <a href={p.url} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-3 border-b border-ink pb-1 text-sm uppercase tracking-[0.2em]">
+                Открыть сайт <span aria-hidden>↗</span>
+              </a>
+            )}
           </div>
         </Reveal>
 

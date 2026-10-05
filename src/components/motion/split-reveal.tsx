@@ -14,7 +14,7 @@ type Props = {
 }
 
 /** Заголовок: строки/слова выезжают из-под маски при появлении. Без JS и при reduced-motion текст просто виден. */
-export function SplitReveal({ as: Tag = 'div', className, children, delay = 0, by = 'lines' }: Props) {
+export function SplitReveal({ as = 'div', className, children, delay = 0, by = 'lines' }: Props) {
   const ref = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -47,8 +47,9 @@ export function SplitReveal({ as: Tag = 'div', className, children, delay = 0, b
     { scope: ref },
   )
 
+  const Tag = as as 'div' // полиморфный тег; ref всегда HTMLElement
   return (
-    <Tag ref={ref} className={className}>
+    <Tag ref={ref as React.RefObject<HTMLDivElement>} className={className}>
       {children}
     </Tag>
   )

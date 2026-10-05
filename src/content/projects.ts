@@ -8,6 +8,7 @@ export type Project = {
   task: string
   solution: string
   stack: string[]
+  url?: string
   results: { value: string; label: string }[]
 }
 
@@ -26,6 +27,18 @@ export const projects: Project[] = [
       { value: '1 день', label: 'на запуск контента из презентации' },
       { value: '0', label: 'правок кода для наполнения' },
     ],
+  },
+  {
+    slug: 'keystone',
+    title: 'Keystone',
+    kind: 'Сайт', // TODO(content): тип проекта
+    year: '2026',
+    tone: '#3a3a36',
+    url: 'https://keystone-kv7e209bj-varde.vercel.app',
+    task: 'TODO(content): задача клиента.',
+    solution: 'TODO(content): что сделали.',
+    stack: ['Next.js'], // TODO(content)
+    results: [{ value: '—', label: 'метрика' }],
   },
   {
     slug: 'demo-2', title: 'Кейс №2', kind: 'Лендинг', year: '2026', tone: '#6b6558',

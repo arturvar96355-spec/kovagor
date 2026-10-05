@@ -1,6 +1,7 @@
 import { Header } from '@/components/layout-header'
 import { Hero } from '@/components/sections/hero'
 import { Manifesto } from '@/components/sections/manifesto'
+import { Marquee } from '@/components/motion/marquee'
 import { Services } from '@/components/sections/services'
 import { Work } from '@/components/sections/work'
 import { Process } from '@/components/sections/process'
@@ -16,6 +17,7 @@ export default function Home() {
       <main id="top">
         <Hero />
         <Manifesto />
+        <Marquee items={['Сайты', 'Анимации', 'Брендинг', 'Запуск']} />
         <Services />
         <Work />
         <Process />
