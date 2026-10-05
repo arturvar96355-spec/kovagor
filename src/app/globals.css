@@ -12,7 +12,7 @@
 }
 
 html { background: var(--color-paper); }
-body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+body { overflow-x: clip; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
 ::selection { background: var(--color-ink); color: var(--color-paper); }
 
 /* Lenis */
