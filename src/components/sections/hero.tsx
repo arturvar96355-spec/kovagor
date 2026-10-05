@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap, ease, registerGsap, NO_REDUCED_MOTION } from '@/lib/animation'
+import { PRELOAD_KEY } from '@/components/motion/preloader'
 import { Monogram } from '@/components/brand'
 import { SplitReveal } from '@/components/motion/split-reveal'
 import { Magnetic } from '@/components/motion/magnetic'
@@ -13,6 +14,9 @@ export function Hero() {
   useGSAP(
     () => {
       registerGsap()
+      let seen = true
+      try { seen = sessionStorage.getItem(PRELOAD_KEY) === '1' } catch {}
+      const d = seen ? 0 : 1.6 // ждём окончания заставки
       const mm = gsap.matchMedia()
       mm.add(NO_REDUCED_MOTION, () => {
         // монограмма: контуры проявляются по очереди
@@ -22,8 +26,9 @@ export function Hero() {
           duration: 1.4,
           ease: ease.out,
           stagger: 0.12,
+          delay: d,
         })
-        gsap.from('[data-hero-fade]', { opacity: 0, y: 16, duration: 1, ease: ease.soft, delay: 0.9, stagger: 0.12 })
+        gsap.from('[data-hero-fade]', { opacity: 0, y: 16, duration: 1, ease: ease.soft, delay: 0.9 + d, stagger: 0.12 })
         // лёгкий параллакс монограммы при скролле
         gsap.to('[data-mono-wrap]', {
           yPercent: 18,
@@ -43,7 +48,7 @@ export function Hero() {
 
       <div className="relative z-10 mt-[10vh] max-w-5xl">
         <p data-hero-fade className="mb-8 text-xs uppercase tracking-[0.35em] text-mute">Студия сайтов под ключ</p>
-        <SplitReveal as="h1" className="font-display text-[clamp(3rem,9vw,9rem)] font-medium leading-[0.95] tracking-tight">
+        <SplitReveal as="h1" delay={(() => { try { return sessionStorage.getItem(PRELOAD_KEY) === "1" ? 0 : 1.6 } catch { return 0 } })()} className="font-display text-[clamp(3rem,9vw,9rem)] font-medium leading-[0.95] tracking-tight">
           Сайты, которые продают ещё до первого звонка
         </SplitReveal>
       </div>

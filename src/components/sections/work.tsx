@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import Link from 'next/link'
 import { useGSAP } from '@gsap/react'
 import { gsap, ease, registerGsap, NO_REDUCED_MOTION } from '@/lib/animation'
 import { projects } from '@/content/projects'
@@ -37,18 +38,15 @@ export function Work() {
       </div>
       <div className="flex flex-col gap-[10vh]">
         {projects.map((p) => (
-          <article key={p.slug} className="group">
+          <Link key={p.slug} href={`/work/${p.slug}`} className="group block" data-cursor="Смотреть">
             <div data-work className="relative aspect-[16/9] overflow-hidden rounded-3xl">
               <div data-media className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.03]" style={{ background: p.tone }} />
-              <span className="absolute bottom-6 right-6 grid h-24 w-24 place-items-center rounded-full bg-paper text-xs uppercase tracking-[0.2em] opacity-0 transition-all duration-500 group-hover:opacity-100">
-                Смотреть
-              </span>
             </div>
             <div className="mt-6 flex flex-wrap items-baseline justify-between gap-2">
               <h3 className="font-display text-4xl md:text-6xl">{p.title}</h3>
               <p className="text-sm uppercase tracking-[0.2em] text-mute">{p.kind} · {p.year}</p>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </section>

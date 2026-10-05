@@ -10,7 +10,7 @@ export function SmoothScroll() {
     registerGsap()
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    const lenis = new Lenis({ duration: 1.15, easing: (t) => 1 - Math.pow(1 - t, 4) })
+    const lenis = new Lenis({ anchors: true, duration: 1.15, easing: (t) => 1 - Math.pow(1 - t, 4) })
     lenis.on('scroll', ScrollTrigger.update)
     const tick = (time: number) => lenis.raf(time * 1000)
     gsap.ticker.add(tick)

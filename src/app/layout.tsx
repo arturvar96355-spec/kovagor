@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Inter } from 'next/font/google'
 import { SmoothScroll } from '@/components/motion/smooth-scroll'
+import { Cursor } from '@/components/motion/cursor'
+import { Preloader } from '@/components/motion/preloader'
 import './globals.css'
 
 const display = Cormorant_Garamond({
@@ -13,6 +15,7 @@ const display = Cormorant_Garamond({
 const sans = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-sans', display: 'swap' })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kovagor.ru'),
   title: 'KOVAGOR — сайты под ключ',
   description: 'KOVAGOR создаёт сайты под ключ: дизайн, анимации, разработка и запуск.',
 }
@@ -23,6 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={`${display.variable} ${sans.variable}`}>
       <body>
+        <Preloader />
+        <Cursor />
         <SmoothScroll />
         {children}
       </body>

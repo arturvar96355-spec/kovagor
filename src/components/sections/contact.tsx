@@ -77,7 +77,6 @@ export function Contact() {
           </form>
         )}
       </div>
-      <p className="mx-auto mt-24 max-w-7xl border-t border-paper/15 pt-8 text-sm opacity-50">© {new Date().getFullYear()} KOVAGOR</p>
     </section>
   )
 }
