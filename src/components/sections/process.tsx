@@ -54,7 +54,7 @@ export function Process() {
   )
   return (
     <section ref={root} id="process" className="overflow-x-clip container-x border-t border-line py-[14vh]">
-      <SectionHead index="02" label="Процесс" title="Как мы работаем" />
+      <SectionHead index="03" label="Процесс" title="Как мы работаем" />
       <div data-steps className="relative pl-10 md:pl-24">
         <div className="absolute bottom-0 left-2 top-0 w-px bg-line md:left-8">
           <div data-line className="h-full w-px bg-ink" />

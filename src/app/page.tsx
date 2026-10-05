@@ -6,7 +6,10 @@ import { Manifesto } from '@/components/sections/manifesto'
 import { Marquee } from '@/components/motion/marquee'
 import { Services } from '@/components/sections/services'
 import { Work } from '@/components/sections/work'
+import { Principles } from '@/components/sections/principles'
 import { Process } from '@/components/sections/process'
+import { Inside } from '@/components/sections/inside'
+import { TariffQuiz } from '@/components/sections/tariff-quiz'
 import { Pricing } from '@/components/sections/pricing'
 import { Faq } from '@/components/sections/faq'
 import { Footer } from '@/components/footer'
@@ -25,7 +28,10 @@ export default function Home() {
         <Manifesto />
         <Marquee items={['Сайты', 'Анимации', 'Брендинг', 'Запуск']} />
         <Services />
+        <Principles />
         <Process />
+        <Inside />
+        <TariffQuiz />
         <Pricing />
         <Work />
         <Faq />

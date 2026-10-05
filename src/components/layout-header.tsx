@@ -54,7 +54,7 @@ export function Header() {
             <Monogram className="h-7 w-auto" />
             <span className="font-display text-xl tracking-[0.3em]">KOVAGOR</span>
           </Link>
-          <nav aria-label="Основная" className="hidden gap-9 text-sm md:flex">
+          <nav aria-label="Основная" className="hidden gap-8 text-sm xl:flex">
             {site.nav.map((l) => (
               <Link key={l.href} href={l.href} className="group relative py-1">
                 {l.label}
@@ -74,7 +74,7 @@ export function Header() {
               aria-expanded={open}
               aria-controls="mobile-menu"
               onClick={() => setOpen(true)}
-              className="grid h-10 w-10 place-items-center md:hidden"
+              className="grid h-10 w-10 place-items-center xl:hidden"
             >
               <span aria-hidden className="block h-px w-6 bg-ink shadow-[0_-6px_0_0_var(--color-ink),0_6px_0_0_var(--color-ink)]" />
             </button>
@@ -93,7 +93,7 @@ export function Header() {
             animate={{ clipPath: 'inset(0 0 0% 0)' }}
             exit={{ clipPath: 'inset(0 0 100% 0)' }}
             transition={{ duration: 0.7, ease: EASE }}
-            className="fixed inset-0 z-[70] flex flex-col bg-ink px-[clamp(20px,4vw,64px)] pb-10 pt-6 text-paper md:hidden"
+            className="fixed inset-0 z-[70] flex flex-col bg-ink px-[clamp(20px,4vw,64px)] pb-10 pt-6 text-paper xl:hidden"
           >
             <div className="flex items-center justify-between">
               <span className="font-display text-xl tracking-[0.3em]">KOVAGOR</span>

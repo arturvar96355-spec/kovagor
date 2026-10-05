@@ -34,7 +34,7 @@ export function Pricing() {
   )
   return (
     <section ref={root} id="pricing" className="container-x border-t border-line py-[14vh]">
-      <SectionHead index="03" label="Тарифы" title="Прозрачные цены" />
+      <SectionHead index="06" label="Тарифы" title="Прозрачные цены" />
       <div className="grid gap-5 lg:grid-cols-3">
         {tariffs.map((t) => (
           <div key={t.id} data-tariff className="flex">

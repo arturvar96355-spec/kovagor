@@ -8,6 +8,8 @@ export const site = {
     { href: '/#process', label: 'Процесс' },
     { href: '/#pricing', label: 'Тарифы' },
     { href: '/#work', label: 'Проекты' },
+    { href: '/motion', label: 'Движение' },
+    { href: '/about', label: 'О студии' },
     { href: '/#faq', label: 'FAQ' },
   ],
 } as const

@@ -95,9 +95,14 @@ export function Contact() {
   })
 
   useEffect(() => {
-    const on = (e: Event) => setValue('project', (e as CustomEvent<LeadInput['project']>).detail)
-    window.addEventListener('pick-tariff', on)
-    return () => window.removeEventListener('pick-tariff', on)
+    const onTariff = (e: Event) => setValue('project', (e as CustomEvent<LeadInput['project']>).detail)
+    const onMessage = (e: Event) => setValue('message', (e as CustomEvent<string>).detail)
+    window.addEventListener('pick-tariff', onTariff)
+    window.addEventListener('prefill-message', onMessage)
+    return () => {
+      window.removeEventListener('pick-tariff', onTariff)
+      window.removeEventListener('prefill-message', onMessage)
+    }
   }, [setValue])
 
   async function onSubmit(data: LeadInput) {
@@ -120,7 +125,7 @@ export function Contact() {
     <section id="contact" className="bg-ink px-[clamp(20px,4vw,64px)] py-[16vh] text-paper">
       <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-2">
         <div>
-          <p className="mb-8 text-xs uppercase tracking-[0.35em] opacity-60">06 · Заявка</p>
+          <p className="mb-8 text-xs uppercase tracking-[0.35em] opacity-60">09 · Заявка</p>
           <SplitReveal as="h2" className="font-display text-[clamp(3rem,7vw,7rem)] leading-[0.95]">
             Расскажите о проекте
           </SplitReveal>
