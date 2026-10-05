@@ -1,4 +1,5 @@
 import { Header } from '@/components/layout-header'
+import { ScrollProgress } from '@/components/motion/scroll-progress'
 import { GlobalScene } from '@/components/three/global-scene'
 import { Hero } from '@/components/sections/hero'
 import { Manifesto } from '@/components/sections/manifesto'
@@ -14,6 +15,7 @@ import { Contact } from '@/components/sections/contact'
 export default function Home() {
   return (
     <>
+      <ScrollProgress />
       <Header />
       <GlobalScene />
       <main id="top">
