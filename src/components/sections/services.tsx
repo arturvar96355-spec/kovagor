@@ -17,7 +17,20 @@ export function Services() {
       mm.add(NO_REDUCED_MOTION, () => {
         const cards = gsap.utils.toArray<HTMLElement>('[data-card]')
 
-        // иллюстрации: контуры прорисовываются, когда карточка встаёт на место; затем живёт собственная петля
+        cards.forEach((card, i) => {
+          if (i === cards.length - 1) return
+          gsap.fromTo(card.firstElementChild, { scale: 1, filter: 'brightness(1)' }, {
+            scale: 0.92,
+            filter: 'brightness(0.92)',
+            ease: 'none',
+            scrollTrigger: { trigger: cards[i + 1], start: 'top 85%', end: 'top 15%', scrub: true },
+          })
+        })
+      })
+      // иллюстрации видны только от lg; у display:none-элементов getTotalLength() падает, поэтому отдельное условие
+      mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+        const cards = gsap.utils.toArray<HTMLElement>('[data-card]')
+        // контуры прорисовываются, когда карточка встаёт на место; затем живёт собственная петля
         cards.forEach((card) => {
           const art = card.querySelector<SVGSVGElement>('[data-art] svg')
           if (!art) return
@@ -45,15 +58,6 @@ export function Services() {
             tl.set(dot, { opacity: 1 }, 1)
             tl.to(prog, { p: 1, duration: 2.2, ease: 'power2.inOut', repeat: -1, repeatDelay: 0.6, onUpdate: place }, 1)
           }
-        })
-        cards.forEach((card, i) => {
-          if (i === cards.length - 1) return
-          gsap.fromTo(card.firstElementChild, { scale: 1, filter: 'brightness(1)' }, {
-            scale: 0.92,
-            filter: 'brightness(0.92)',
-            ease: 'none',
-            scrollTrigger: { trigger: cards[i + 1], start: 'top 85%', end: 'top 15%', scrub: true },
-          })
         })
       })
     },
