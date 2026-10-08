@@ -59,13 +59,13 @@ export function Inside() {
 
   return (
     <section ref={root} id="inside" className="relative overflow-hidden border-t border-line py-[10vh] min-[900px]:flex min-[900px]:min-h-svh min-[900px]:flex-col min-[900px]:justify-center min-[900px]:py-0">
-      <div className="container-x min-[900px]:pt-24">
+      <div className="container-x min-[900px]:pt-20">
         <SectionHead index="04" label="Фишки" title="Фишки, которые можно забрать себе" />
-        <p className="-mt-10 mb-12 max-w-xl text-lg text-ink-2 min-[900px]:mb-14">Этот сайт — наша визитка и полигон. Каждая фишка здесь работает по-настоящему, и каждую можно перенести на ваш проект.</p>
+        <p className="-mt-10 mb-12 max-w-xl text-lg text-ink-2 min-[900px]:hidden">Этот сайт — наша визитка и полигон. Каждая фишка здесь работает по-настоящему, и каждую можно перенести на ваш проект.</p>
       </div>
-      <div ref={track} className="container-x grid gap-5 min-[900px]:flex min-[900px]:w-max min-[900px]:gap-6 min-[900px]:pb-24">
+      <div ref={track} className="container-x grid gap-5 min-[900px]:flex min-[900px]:w-max min-[900px]:gap-6 min-[900px]:pb-20">
         {inside.map((c) => (
-          <article key={c.n} data-inside-card className="group flex flex-col justify-between gap-6 rounded-3xl border border-line bg-paper-2 p-6 transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(.16,1,.3,1)] hover:-translate-y-2 hover:shadow-[0_24px_50px_-24px_rgba(31,31,29,.35)] min-[900px]:h-[56vh] min-[900px]:min-h-[430px] min-[900px]:w-[min(62vw,520px)] min-[900px]:p-8">
+          <article key={c.n} data-inside-card className="group flex flex-col justify-between gap-6 rounded-3xl border border-line bg-paper-2 p-6 transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(.16,1,.3,1)] hover:-translate-y-2 hover:shadow-[0_24px_50px_-24px_rgba(31,31,29,.35)] min-[900px]:h-[clamp(380px,calc(100svh-470px),540px)] min-[900px]:w-[min(62vw,520px)] min-[900px]:p-8">
             <div>
               <div className="mb-5 flex items-center justify-between">
                 <span className="font-display text-xl text-mute">{c.n}</span>
@@ -80,7 +80,7 @@ export function Inside() {
           </article>
         ))}
       </div>
-      <div aria-hidden className="container-x hidden items-center gap-5 min-[900px]:absolute min-[900px]:inset-x-0 min-[900px]:bottom-8 min-[900px]:flex">
+      <div aria-hidden className="container-x hidden items-center gap-5 min-[900px]:absolute min-[900px]:inset-x-0 min-[900px]:bottom-6 min-[900px]:flex">
         <span className="font-display text-xl tabular-nums"><span ref={counter}>01</span> / {String(inside.length).padStart(2, '0')}</span>
         <div className="h-px flex-1 bg-line">
           <div ref={bar} className="h-full origin-left scale-x-0 bg-ink" />
