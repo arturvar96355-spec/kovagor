@@ -6,6 +6,7 @@
 // Переменные Worker: BOT_TOKEN (Secret), WEBHOOK_SECRET (Secret), GROUP_ID (Text, id супергруппы с темами, вида -100…),
 // CONSENT_URL (Text, по умолчанию https://kovagor.ru/consent), GREETING (Text, необязательно). Хранилище: KV-привязка с именем KV.
 
+// Заявки с сайта: переменные SITE_URL (Text, https://kovagor.ru) и PULL_SECRET (Secret, то же значение, что LEAD_PULL_SECRET в .env сайта).
 const API = (env, method, body) =>
   fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/${method}`, {
     method: 'POST',
@@ -17,6 +18,35 @@ const TARIFFS = {
   landing: 'Лендинг (от 5 000 ₽)',
   studio: 'Сайт-студия (от 15 000 ₽)',
   flagship: 'Эталон (от 30 000 ₽)',
+}
+
+const LEAD_RE = /^lead_\d{1,9}_[A-Za-z0-9_-]{12}$/
+
+// Заявка с сайта: бот забирает карточку с сайта по подписанному токену из ссылки (t.me/бот?start=lead_…)
+async function pullLead(env, token) {
+  if (!env.PULL_SECRET) return null
+  try {
+    const base = (env.SITE_URL || 'https://kovagor.ru').replace(/\/$/, '')
+    const r = await fetch(`${base}/api/lead/pull?token=${encodeURIComponent(token)}`, { headers: { 'x-pull-secret': env.PULL_SECRET } })
+    return r.ok ? await r.json() : null
+  } catch {
+    return null
+  }
+}
+
+async function handleLead(env, msg, user, token, lead) {
+  if (await env.KV.get(`l:${token}`)) {
+    await API(env, 'sendMessage', { chat_id: msg.chat.id, text: 'Ваша заявка уже у нас. Пишите сюда — ответим в этом чате.' })
+    return
+  }
+  await env.KV.put(`l:${token}`, '1')
+  const thread = await ensureTopic(env, user)
+  const tariff = TARIFFS[lead.project] || 'не выбран'
+  const card = ['🆕 Заявка с сайта', `Имя: ${lead.name}`, `Контакт: ${lead.contact}`, `Тариф: ${tariff}`, lead.quiz && `Подбор тарифа: ${lead.quiz}`, lead.message && `\nКомментарий: ${lead.message}`, '\nСогласие на обработку данных дано на сайте.']
+    .filter(Boolean)
+    .join('\n')
+  await API(env, 'sendMessage', { chat_id: env.GROUP_ID, message_thread_id: thread, text: card })
+  await API(env, 'sendMessage', { chat_id: msg.chat.id, text: `Спасибо, ${lead.name}! Заявка получена (тариф: ${tariff}). Ответим здесь в течение рабочего дня. Если хотите что-то добавить, просто напишите.` })
 }
 
 // Тариф приходит с сайта в /start <тариф>; запоминаем до согласия и сообщаем менеджерам, когда тема создана
@@ -50,6 +80,14 @@ async function ensureTopic(env, user) {
 async function fromClient(env, msg) {
   const user = msg.from
   const start = /^\/start(?:\s+(\S+))?/.exec(msg.text || '')
+  if (start && start[1] && LEAD_RE.test(start[1])) {
+    const lead = await pullLead(env, start[1])
+    if (lead) {
+      await env.KV.put(`a:${user.id}`, new Date().toISOString()) // согласие дано в форме на сайте
+      await handleLead(env, msg, user, start[1], lead)
+      return
+    }
+  }
   if (start && start[1] && TARIFFS[start[1]]) await env.KV.put(`p:${user.id}`, start[1], { expirationTtl: 86400 })
   const consent = await env.KV.get(`a:${user.id}`)
   const consentUrl = env.CONSENT_URL || 'https://kovagor.ru/consent'

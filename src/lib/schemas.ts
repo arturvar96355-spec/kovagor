@@ -5,6 +5,7 @@ export const leadSchema = z.object({
   contact: z.string().trim().min(3, 'Укажите Telegram, телефон или email').max(120),
   project: z.enum(['landing', 'studio', 'flagship', 'other']).default('other'),
   message: z.string().trim().max(2000).optional().default(''),
+  quiz: z.string().trim().max(400).optional().default(''), // итог «Подбора тарифа» на сайте
   consent: z.literal(true, { message: 'Без согласия на обработку данных мы не можем принять заявку' }),
   website: z.string().max(0).optional().default(''), // honeypot
 })

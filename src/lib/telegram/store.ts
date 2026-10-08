@@ -2,7 +2,7 @@ import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 
-export type Lead = { id: number; name: string; contact: string; project: string; message: string; created_at: number }
+export type Lead = { id: number; name: string; contact: string; project: string; message: string; quiz: string; created_at: number }
 /** Тред = тема в группе менеджеров ↔ один клиент. client_chat_id пуст, пока клиент не открыл бота. */
 export type Thread = {
   topic_id: number
@@ -46,6 +46,11 @@ export class Store {
         consented_at INTEGER NOT NULL
       );
     `)
+    try {
+      this.db.exec("ALTER TABLE leads ADD COLUMN quiz TEXT NOT NULL DEFAULT ''")
+    } catch {
+      // колонка уже есть
+    }
   }
 
   hasTgConsent(chatId: number): boolean {
@@ -66,10 +71,11 @@ export class Store {
     return this.db.prepare('SELECT name, contact, policy_version, ip_hash, consented_at FROM consents ORDER BY id').all() as never
   }
 
-  createLead(l: Omit<Lead, 'id' | 'created_at'>): Lead {
+  createLead(l: Omit<Lead, 'id' | 'created_at' | 'quiz'> & { quiz?: string }): Lead {
     const created_at = Date.now()
-    const r = this.db.prepare('INSERT INTO leads(name, contact, project, message, created_at) VALUES (?,?,?,?,?)').run(l.name, l.contact, l.project, l.message, created_at)
-    return { ...l, id: Number(r.lastInsertRowid), created_at }
+    const quiz = l.quiz ?? ''
+    const r = this.db.prepare('INSERT INTO leads(name, contact, project, message, quiz, created_at) VALUES (?,?,?,?,?,?)').run(l.name, l.contact, l.project, l.message, quiz, created_at)
+    return { ...l, quiz, id: Number(r.lastInsertRowid), created_at }
   }
 
   getLead(id: number): Lead | undefined {
