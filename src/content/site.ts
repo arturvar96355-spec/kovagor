@@ -1,6 +1,6 @@
 export const site = {
   name: 'KOVAGOR',
-  telegram: 'https://t.me/kovagor',
+  telegram: 'https://t.me/kovagor_bot',
   phone: '+79997826514',
   phoneLabel: '+7 999 782-65-14',
   nav: [
@@ -9,7 +9,6 @@ export const site = {
     { href: '/#pricing', label: 'Тарифы' },
     { href: '/#work', label: 'Проекты' },
     { href: '/motion', label: 'Движение' },
-    { href: '/about', label: 'О студии' },
     { href: '/#faq', label: 'FAQ' },
   ],
 } as const

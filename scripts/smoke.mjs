@@ -52,13 +52,13 @@ for (const [name, opts] of [
 }
 {
   const m = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
-  for (const path of ['/about', '/motion', '/privacy', '/consent', '/cookies', '/work/keystone']) {
+  for (const path of ['/motion', '/privacy', '/consent', '/cookies', '/work/keystone']) {
     await m.goto(BASE + path)
     await m.waitForTimeout(1500)
     check(!(await m.evaluate(() => document.documentElement.scrollWidth > innerWidth)), `mobile ${path}: нет горизонтальной прокрутки`)
   }
 }
-for (const path of ['/about', '/motion', '/privacy', '/consent', '/cookies', '/offer', '/work/pk-strela', '/work/keystone', '/opengraph-image', '/sitemap.xml', '/robots.txt']) {
+for (const path of ['/motion', '/privacy', '/consent', '/cookies', '/offer', '/work/pk-strela', '/work/keystone', '/opengraph-image', '/sitemap.xml', '/robots.txt']) {
   const r = await (await browser.newPage()).goto(BASE + path)
   check(r.status() === 200, `${path}: 200`)
 }
