@@ -1,7 +1,8 @@
+import { site } from '@/content/site'
 import { faq } from '@/content/faq'
 import { tariffs } from '@/content/tariffs'
 
-/** Структурированные данные для поисковиков: организация с прайсом и FAQ. Только подтверждённые факты (без адреса, телефона, рейтингов). */
+/** Структурированные данные для поисковиков: организация с прайсом и FAQ. Только подтверждённые факты (без адреса, рейтингов). */
 export function JsonLd({ siteUrl }: { siteUrl: string }) {
   const data = [
     {
@@ -9,6 +10,7 @@ export function JsonLd({ siteUrl }: { siteUrl: string }) {
       '@type': 'ProfessionalService',
       name: 'KOVAGOR',
       url: siteUrl,
+      telephone: site.phone,
       logo: `${siteUrl}/brand/monogram.png`,
       description: 'Студия сайтов под ключ: дизайн, анимации, разработка и запуск.',
       makesOffer: tariffs.map((t) => ({

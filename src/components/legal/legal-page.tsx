@@ -24,6 +24,6 @@ import { operatorLines } from '@/content/legal'
 /** Строка оператора для текстов документов; незаполненные поля помечены TODO(legal). */
 export function operatorText() {
   const o = operatorLines()
-  return `${o.name}, ИНН ${o.inn}${o.ogrn ? `, ОГРН(ИП) ${o.ogrn}` : ''}, ${o.address}, ${o.email}`
+  return `${o.name}, ИНН ${o.inn}${o.ogrn ? `, ОГРН(ИП) ${o.ogrn}` : ''}, ${o.address}, ${o.contact}`
 }
 export const OPERATOR = operatorText()

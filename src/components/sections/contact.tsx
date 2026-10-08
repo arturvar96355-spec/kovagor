@@ -132,7 +132,7 @@ export function Contact() {
           <p className="mt-8 max-w-md text-lg opacity-70">Ответим в течение рабочего дня, уточним задачу и назовём стоимость.</p>
           <div className="mt-10 space-y-2 text-lg">
             <a href={site.telegram} data-goal="contact_telegram" className="block underline-offset-4 hover:underline">Telegram</a>
-            <a href={`mailto:${site.email}`} data-goal="contact_email" className="block underline-offset-4 hover:underline">{site.email}</a>
+            <a href={`tel:${site.phone}`} data-goal="contact_phone" className="block underline-offset-4 hover:underline">{site.phoneLabel}</a>
           </div>
         </div>
 

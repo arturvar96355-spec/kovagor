@@ -1,8 +1,8 @@
 export const site = {
   name: 'KOVAGOR',
-  // TODO(content): подставить реальные контакты
   telegram: 'https://t.me/kovagor',
-  email: 'hello@kovagor.ru',
+  phone: '+79997826514',
+  phoneLabel: '+7 999 782-65-14',
   nav: [
     { href: '/#services', label: 'Услуги' },
     { href: '/#process', label: 'Процесс' },
