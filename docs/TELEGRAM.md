@@ -72,3 +72,17 @@ Telegram   ──>  ретранслятор                ──>  сайт (/
 | Форма говорит «Не удалось отправить» | Неверный токен или id группы; `docker compose logs app` |
 | Ответ менеджера не доходит клиенту | Клиент не нажал «Продолжить в Telegram» (бот предупредит в теме); либо заблокировал бота |
 | Клиент пишет боту, а в группе тишина | Вебхук не подключён: `telegram-setup.mjs https://kovagor.ru`; `getWebhookInfo` покажет последнюю ошибку |
+
+
+## Ретранслятор без сервера: Cloudflare Worker
+
+Если зарубежного сервера нет, посредником может быть бесплатный Cloudflare Worker (`relay/cloudflare/worker.js`). Он делает то же, что Caddy-ретранслятор.
+
+1. Зарегистрируйтесь на cloudflare.com (карта не нужна) → **Workers & Pages → Create → Create Worker**, назовите, например, `kovagor-tg`, нажмите Deploy.
+2. **Edit code** → удалите всё, вставьте содержимое `relay/cloudflare/worker.js` → Deploy.
+3. **Settings → Variables and Secrets** → добавьте:
+   - `SITE_SERVER_IP` (Text) — IPv4 российского сервера;
+   - `SITE_DOMAIN` (Text) — `kovagor.ru`;
+   - `WEBHOOK_SECRET` (Secret) — значение `TELEGRAM_WEBHOOK_SECRET` из `.env` сайта.
+4. Адрес Worker выглядит как `kovagor-tg.ИМЯ.workers.dev`. Проверка с российского сервера: `curl -sS https://kovagor-tg.ИМЯ.workers.dev/` должен ответить `ok`. Если таймаут — адрес `workers.dev` у вас заблокирован; тогда нужен зарубежный сервер (Caddy-вариант выше).
+5. На российском сервере: `bash scripts/set-relay.sh kovagor-tg.ИМЯ.workers.dev`, затем `bash scripts/deploy.sh` и `bash scripts/set-webhook.sh`.
