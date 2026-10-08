@@ -13,6 +13,21 @@ const API = (env, method, body) =>
     body: JSON.stringify(body),
   }).then((r) => r.json())
 
+const TARIFFS = {
+  landing: 'Лендинг (от 5 000 ₽)',
+  studio: 'Сайт-студия (от 15 000 ₽)',
+  flagship: 'Эталон (от 30 000 ₽)',
+}
+
+// Тариф приходит с сайта в /start <тариф>; запоминаем до согласия и сообщаем менеджерам, когда тема создана
+async function announce(env, user) {
+  const key = await env.KV.get(`p:${user.id}`)
+  if (!key || !TARIFFS[key]) return
+  const thread = await ensureTopic(env, user)
+  await API(env, 'sendMessage', { chat_id: env.GROUP_ID, message_thread_id: thread, text: `Выбранный на сайте тариф: ${TARIFFS[key]}` })
+  await env.KV.delete(`p:${user.id}`)
+}
+
 const GREETING = 'Здравствуйте! Это бот студии KOVAGOR. Напишите, что вам нужно, — мы ответим здесь же.'
 
 async function ensureTopic(env, user) {
@@ -34,6 +49,8 @@ async function ensureTopic(env, user) {
 
 async function fromClient(env, msg) {
   const user = msg.from
+  const start = /^\/start(?:\s+(\S+))?/.exec(msg.text || '')
+  if (start && start[1] && TARIFFS[start[1]]) await env.KV.put(`p:${user.id}`, start[1], { expirationTtl: 86400 })
   const consent = await env.KV.get(`a:${user.id}`)
   const consentUrl = env.CONSENT_URL || 'https://kovagor.ru/consent'
   if (!consent) {
@@ -44,8 +61,11 @@ async function fromClient(env, msg) {
     })
     return
   }
-  if (msg.text === '/start') {
-    await API(env, 'sendMessage', { chat_id: msg.chat.id, text: env.GREETING || GREETING })
+  if (start) {
+    const picked = await env.KV.get(`p:${user.id}`)
+    const note = picked && TARIFFS[picked] ? `\n\nВы выбрали тариф: ${TARIFFS[picked]}. Опишите коротко задачу — ответим здесь.` : ''
+    await API(env, 'sendMessage', { chat_id: msg.chat.id, text: (env.GREETING || GREETING) + note })
+    await announce(env, user)
     return
   }
   let thread = await ensureTopic(env, user)
@@ -79,7 +99,10 @@ async function handle(env, update) {
     const q = update.callback_query
     await env.KV.put(`a:${q.from.id}`, new Date().toISOString())
     await API(env, 'answerCallbackQuery', { callback_query_id: q.id })
-    await API(env, 'sendMessage', { chat_id: q.message.chat.id, text: (env.GREETING || GREETING) })
+    const picked = await env.KV.get(`p:${q.from.id}`)
+    const note = picked && TARIFFS[picked] ? `\n\nВы выбрали тариф: ${TARIFFS[picked]}. Опишите коротко задачу — ответим здесь.` : ''
+    await API(env, 'sendMessage', { chat_id: q.message.chat.id, text: (env.GREETING || GREETING) + note })
+    await announce(env, q.from)
     return
   }
   const msg = update.message
