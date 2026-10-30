@@ -11,6 +11,7 @@ const SPRING = { type: 'spring', stiffness: 380, damping: 34 } as const
 
 /** CRM-макет: канбан с перетаскиванием, карточка сделки, клиенты с поиском и дашборд с анимированными цифрами. */
 export function CrmView(props: {
+  brand: string
   leads: Lead[]
   fresh: number | null
   tab: CrmTab
@@ -22,7 +23,7 @@ export function CrmView(props: {
   setOpenId: (id: number | null) => void
   uid: string
 }) {
-  const { leads, fresh, tab, setTab, setStage, setNote, addIncoming, openId, setOpenId, uid } = props
+  const { brand, leads, fresh, tab, setTab, setStage, setNote, addIncoming, openId, setOpenId, uid } = props
   const [dragId, setDragId] = useState<number | null>(null)
   const [over, setOver] = useState<Stage | null>(null)
   const [q, setQ] = useState('')
@@ -38,7 +39,7 @@ export function CrmView(props: {
   return (
     <div className="relative flex h-full bg-ink text-paper">
       <aside className="hidden w-40 shrink-0 flex-col gap-1 border-r border-paper/10 p-4 text-sm sm:flex">
-        <span className="mb-4 font-display text-lg">Лён · CRM</span>
+        <span className="mb-4 font-display text-lg">{brand} · CRM</span>
         {NAV.map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)} aria-current={tab === id ? 'page' : undefined} className="rounded-lg px-3 py-2 text-left text-paper/60 transition-colors hover:text-paper aria-[current=page]:bg-paper/10 aria-[current=page]:text-paper">
             {label}

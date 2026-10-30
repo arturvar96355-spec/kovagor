@@ -2,14 +2,14 @@
 
 import type { RefObject } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { SERVICES, SLOTS, fmt, type Form } from './data'
+import { SLOTS, fmt, type Form, type Preset } from './data'
 
 export type SitePage = 'home' | 'services' | 'book'
-const PAGES: [SitePage, string][] = [['home', 'Главная'], ['services', 'Услуги'], ['book', 'Запись']]
 const field = 'w-full rounded-xl border border-ink/20 bg-paper px-4 py-3 text-sm outline-none transition-colors focus:border-ink'
 
 /** Макет сайта салона: три кликабельные страницы внутри окна и форма записи, которая отправляет заявку в «CRM». */
 export function SiteView(props: {
+  preset: Preset
   page: SitePage
   setPage: (p: SitePage) => void
   form: Form
@@ -21,13 +21,20 @@ export function SiteView(props: {
   goTg: () => void
   submitRef: RefObject<HTMLButtonElement | null>
 }) {
-  const { page, setPage, form, setForm, onSubmit, error, sentId, goCrm, goTg, submitRef } = props
+  const { preset, page, setPage, form, setForm, onSubmit, error, sentId, goCrm, goTg, submitRef } = props
+  const PAGES: [SitePage, string][] = [['home', 'Главная'], ['services', preset.catalog], ['book', preset.book]]
+  const SERVICES = preset.services
+  const glow = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    e.currentTarget.style.setProperty('--gx', `${e.clientX - r.left}px`)
+    e.currentTarget.style.setProperty('--gy', `${e.clientY - r.top}px`)
+  }
   const set = (patch: Partial<Form>) => setForm({ ...form, ...patch })
 
   return (
     <div className="flex h-full flex-col bg-paper-2">
       <div className="flex items-center justify-between gap-3 border-b border-ink/10 px-5 py-3 sm:px-7">
-        <span className="font-display text-2xl">Лён</span>
+        <span className="font-display text-2xl">{preset.brand}</span>
         <nav aria-label="Страницы макета" className="flex gap-1">
           {PAGES.map(([id, label]) => (
             <button key={id} onClick={() => setPage(id)} aria-current={page === id ? 'page' : undefined} className="relative rounded-full px-3 py-1.5 text-sm text-ink-2 transition-colors hover:text-ink aria-[current=page]:text-ink">
@@ -41,18 +48,19 @@ export function SiteView(props: {
       <div className="relative min-h-0 flex-1 overflow-y-auto">
         <AnimatePresence mode="wait" initial={false}>
           {page === 'home' && (
-            <motion.div key="home" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -14 }} transition={{ duration: 0.3 }} className="relative overflow-hidden p-6 sm:p-8">
-              <span aria-hidden className="art-float absolute -right-10 -top-10 h-56 w-56 rounded-full bg-[#e8d9c1] opacity-80 blur-3xl" />
-              <span aria-hidden className="art-float absolute bottom-0 left-1/3 h-40 w-40 rounded-full bg-[#d9e2d6] opacity-70 blur-3xl [animation-delay:-2s]" />
+            <motion.div key="home" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -14 }} transition={{ duration: 0.3 }} onPointerMove={glow} className="relative min-h-full overflow-hidden p-6 sm:p-8">
+              <span aria-hidden className="art-float absolute -right-10 -top-10 h-56 w-56 rounded-full opacity-80 blur-3xl" style={{ background: preset.blobs[0] }} />
+              <span aria-hidden className="art-float absolute bottom-0 left-1/3 h-40 w-40 rounded-full opacity-70 blur-3xl [animation-delay:-2s]" style={{ background: preset.blobs[1] }} />
+              <span aria-hidden className="pointer-events-none absolute inset-0 opacity-70" style={{ background: 'radial-gradient(280px circle at var(--gx, 70%) var(--gy, 30%), rgba(255,255,255,.55), transparent 70%)' }} />
               <div className="relative">
-                <p className="text-[11px] uppercase tracking-[0.3em] text-mute">Студия красоты · макет</p>
-                <h3 className="mt-3 max-w-md font-display text-4xl leading-[1.05] sm:text-5xl">Стрижка, которую хочется показывать</h3>
-                <p className="mt-4 max-w-sm text-ink-2">Выберите услугу, время и запишитесь за минуту. Напомним за день.</p>
+                <p className="text-[11px] uppercase tracking-[0.3em] text-mute">{preset.kicker}</p>
+                <h3 className="mt-3 max-w-md font-display text-4xl leading-[1.05] sm:text-5xl">{preset.title}</h3>
+                <p className="mt-4 max-w-sm text-ink-2">{preset.text}</p>
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={() => setPage('book')} className="mt-7 rounded-full bg-ink px-8 py-3.5 text-xs uppercase tracking-[0.2em] text-paper">
-                  Записаться
+                  {preset.action}
                 </motion.button>
                 <div className="mt-8 flex flex-wrap gap-2 text-xs">
-                  {['Ежедневно 10–21', 'Онлайн-запись', 'Напоминания в Telegram'].map((t) => (
+                  {preset.tags.map((t) => (
                     <span key={t} className="rounded-full border border-ink/20 px-3 py-1.5 text-ink-2">{t}</span>
                   ))}
                 </div>
@@ -62,7 +70,7 @@ export function SiteView(props: {
 
           {page === 'services' && (
             <motion.div key="services" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -14 }} transition={{ duration: 0.3 }} className="p-6 sm:p-8">
-              <p className="mb-4 text-[11px] uppercase tracking-[0.3em] text-mute">Услуги</p>
+              <p className="mb-4 text-[11px] uppercase tracking-[0.3em] text-mute">{preset.catalog}</p>
               <ul className="grid gap-3 sm:grid-cols-2">
                 {SERVICES.map((s) => {
                   const on = form.service === s.id
@@ -86,7 +94,7 @@ export function SiteView(props: {
                   )
                 })}
               </ul>
-              <button onClick={() => setPage('book')} className="mt-6 rounded-full border border-ink px-6 py-3 text-xs uppercase tracking-[0.2em] transition-colors hover:bg-ink hover:text-paper">Записаться на выбранное →</button>
+              <button onClick={() => setPage('book')} className="mt-6 rounded-full border border-ink px-6 py-3 text-xs uppercase tracking-[0.2em] transition-colors hover:bg-ink hover:text-paper">{preset.action} на выбранное →</button>
             </motion.div>
           )}
 
@@ -117,7 +125,7 @@ export function SiteView(props: {
                   noValidate
                 >
                   <fieldset>
-                    <legend className="mb-2 text-[11px] uppercase tracking-[0.3em] text-mute">Услуга</legend>
+                    <legend className="mb-2 text-[11px] uppercase tracking-[0.3em] text-mute">{preset.catalog}</legend>
                     <div className="flex flex-wrap gap-2">
                       {SERVICES.map((s) => (
                         <button key={s.id} type="button" aria-pressed={form.service === s.id} onClick={() => set({ service: s.id })} className={`rounded-full border px-4 py-2 text-sm transition-colors ${form.service === s.id ? 'border-ink bg-ink text-paper' : 'border-ink/20 hover:border-ink/50'}`}>
@@ -127,7 +135,7 @@ export function SiteView(props: {
                     </div>
                   </fieldset>
                   <fieldset>
-                    <legend className="mb-2 text-[11px] uppercase tracking-[0.3em] text-mute">Время сегодня</legend>
+                    <legend className="mb-2 text-[11px] uppercase tracking-[0.3em] text-mute">{preset.slotsTitle}</legend>
                     <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                       {SLOTS.map((s) => (
                         <button key={s.t} type="button" disabled={s.busy} aria-pressed={form.slot === s.t} onClick={() => set({ slot: s.t })} className={`rounded-xl border py-2 text-sm transition-colors disabled:cursor-not-allowed disabled:line-through disabled:opacity-40 ${form.slot === s.t ? 'border-ink bg-ink text-paper' : 'border-ink/20 hover:border-ink/50'}`}>
@@ -148,7 +156,7 @@ export function SiteView(props: {
                   </div>
                   <div className="flex flex-wrap items-center gap-4">
                     <motion.button ref={submitRef} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="rounded-full bg-ink px-8 py-3.5 text-xs uppercase tracking-[0.2em] text-paper">
-                      Записаться
+                      {preset.action}
                     </motion.button>
                     <p role="status" className={`text-sm ${error ? 'text-red-700' : 'text-ink-2'}`}>{error || 'Макет: данные остаются в этом окне.'}</p>
                   </div>
