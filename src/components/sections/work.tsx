@@ -6,7 +6,7 @@ import { ProjectRows } from './project-rows'
 export function Work() {
   return (
     <section id="work" className="container-x border-t border-line py-[14vh]">
-      <SectionHead index="07" label="Проекты" title="Примеры работ" />
+      <SectionHead index="08" label="Проекты" title="Примеры работ" />
       <ProjectRows projects={projects} />
     </section>
   )

@@ -60,7 +60,7 @@ export function Inside() {
   return (
     <section ref={root} id="inside" className="relative overflow-hidden border-t border-line py-[10vh] min-[900px]:flex min-[900px]:min-h-svh min-[900px]:flex-col min-[900px]:justify-center min-[900px]:py-0">
       <div className="container-x min-[900px]:pt-20">
-        <SectionHead index="04" label="Фишки" title="Фишки, которые можно забрать себе" />
+        <SectionHead index="05" label="Фишки" title="Фишки, которые можно забрать себе" />
         <p className="-mt-10 mb-12 max-w-xl text-lg text-ink-2 min-[900px]:hidden">Этот сайт — наша визитка и полигон. Каждая фишка здесь работает по-настоящему, и каждую можно перенести на ваш проект.</p>
       </div>
       <div ref={track} className="container-x grid gap-5 min-[900px]:flex min-[900px]:w-max min-[900px]:gap-6 min-[900px]:pb-20">

@@ -51,6 +51,27 @@ for (const [name, opts] of [
   await page.close()
 }
 {
+  // демо «сайт ↔ CRM»: заявка с макета сайта появляется в CRM и переносится по этапам
+  const d = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+  await d.goto(BASE)
+  await d.waitForTimeout(3000)
+  await d.evaluate(() => document.getElementById('demo').scrollIntoView())
+  await d.waitForTimeout(1500)
+  await d.fill('#demo input[name=name]', 'Проверка')
+  await d.fill('#demo input[name=contact]', '@check')
+  await d.click('#demo form button')
+  await d.click('#demo [role=tablist][aria-label="Что показать"] button:has-text("CRM")')
+  await d.waitForTimeout(1200)
+  const card = d.locator('#demo li button', { hasText: 'Проверка' })
+  check((await card.count()) === 1, 'демо: заявка с «сайта» появилась в CRM')
+  await card.click()
+  await d.waitForTimeout(800)
+  await d.click('#demo [role=tab]:has-text("Дашборд")')
+  const stats = await d.locator('#demo dl').innerText()
+  check(/В РАБОТЕ\s*3/i.test(stats), 'демо: перенос карточки меняет дашборд')
+  await d.close()
+}
+{
   const m = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
   for (const path of ['/motion', '/privacy', '/consent', '/cookies', '/work/keystone']) {
     await m.goto(BASE + path)

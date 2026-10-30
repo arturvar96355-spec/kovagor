@@ -18,7 +18,7 @@ export function Principles() {
   return (
     <section ref={root} id="principles" className="spot relative overflow-hidden bg-ink px-[clamp(20px,4vw,64px)] py-[16vh] text-paper">
       <div className="mx-auto max-w-7xl">
-        <SectionHead index="02" label="Принципы" title="Как мы делаем сайты" dark />
+        <SectionHead index="03" label="Принципы" title="Как мы делаем сайты" dark />
         <div className="grid gap-x-16 gap-y-16 md:grid-cols-2 xl:grid-cols-3">
           {principles.map((p) => (
             <div key={p.n} data-spot-item className="relative">

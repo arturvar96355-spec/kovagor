@@ -5,6 +5,7 @@ import { Hero } from '@/components/sections/hero'
 import { Manifesto } from '@/components/sections/manifesto'
 import { Marquee } from '@/components/motion/marquee'
 import { Services } from '@/components/sections/services'
+import { LiveDemo } from '@/components/sections/live-demo'
 import { Work } from '@/components/sections/work'
 import { Principles } from '@/components/sections/principles'
 import { Process } from '@/components/sections/process'
@@ -28,6 +29,7 @@ export default function Home() {
         <Manifesto />
         <Marquee items={['Сайты', 'Анимации', 'Брендинг', 'Запуск']} />
         <Services />
+        <LiveDemo />
         <Principles />
         <Process />
         <Inside />

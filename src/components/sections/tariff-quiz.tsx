@@ -60,7 +60,7 @@ export function TariffQuiz() {
 
   return (
     <section id="quiz" className="container-x border-t border-line py-[14vh]">
-      <SectionHead index="05" label="Подбор" title="Какой тариф вам подойдёт" />
+      <SectionHead index="06" label="Подбор" title="Какой тариф вам подойдёт" />
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 flex items-center gap-3" aria-hidden>
           {questions.map((_, i) => (
