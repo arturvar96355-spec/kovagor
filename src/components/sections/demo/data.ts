@@ -9,6 +9,7 @@ export type PresetId = 'salon' | 'clinic' | 'shop'
 export type Preset = {
   id: PresetId
   label: string
+  short: string
   brand: string
   domain: string
   kicker: string
@@ -31,7 +32,7 @@ const L = (id: number, name: string, contact: string, service: string, price: nu
 
 export const PRESETS: Record<PresetId, Preset> = {
   salon: {
-    id: 'salon', label: 'Салон красоты', brand: 'Лён', domain: 'len.example', kicker: 'Студия красоты · макет',
+    id: 'salon', label: 'Салон красоты', short: 'Салон', brand: 'Лён', domain: 'len.example', kicker: 'Студия красоты · макет',
     title: 'Стрижка, которую хочется показывать', text: 'Выберите услугу, время и запишитесь за минуту. Напомним за день.',
     tags: ['Ежедневно 10–21', 'Онлайн-запись', 'Напоминания в Telegram'], action: 'Записаться', catalog: 'Услуги', book: 'Запись', slotsTitle: 'Время сегодня',
     blobs: ['#e8d9c1', '#d9e2d6'], playName: 'Алина', playService: 'color',
@@ -55,7 +56,7 @@ export const PRESETS: Record<PresetId, Preset> = {
     ],
   },
   clinic: {
-    id: 'clinic', label: 'Клиника', brand: 'Ясный приём', domain: 'yasny.example', kicker: 'Частная клиника · макет',
+    id: 'clinic', label: 'Клиника', short: 'Клиника', brand: 'Ясный приём', domain: 'yasny.example', kicker: 'Частная клиника · макет',
     title: 'Запись к врачу за минуту', text: 'Выберите услугу и время, администратор подтвердит запись и напомнит о приёме.',
     tags: ['Ежедневно 8–20', 'Онлайн-запись', 'Напоминание о приёме'], action: 'Записаться', catalog: 'Услуги', book: 'Запись', slotsTitle: 'Приём сегодня',
     blobs: ['#d6e4f0', '#dff0e6'], playName: 'Елена', playService: 'ultra',
@@ -79,7 +80,7 @@ export const PRESETS: Record<PresetId, Preset> = {
     ],
   },
   shop: {
-    id: 'shop', label: 'Магазин цветов', brand: 'Лепесток', domain: 'lepestok.example', kicker: 'Цветочная мастерская · макет',
+    id: 'shop', label: 'Магазин цветов', short: 'Цветы', brand: 'Лепесток', domain: 'lepestok.example', kicker: 'Цветочная мастерская · макет',
     title: 'Цветы с доставкой к нужному часу', text: 'Соберите букет и выберите время доставки. Подтвердим заказ в Telegram.',
     tags: ['Доставка по городу', 'Свежие поставки', 'Открытка в подарок'], action: 'Заказать', catalog: 'Каталог', book: 'Заказ', slotsTitle: 'Доставка сегодня',
     blobs: ['#f1d9de', '#e2ead3'], playName: 'Дарья', playService: 'mix',

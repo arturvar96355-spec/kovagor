@@ -188,16 +188,16 @@ export function LiveDemo() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <section id="demo" className="relative overflow-x-clip border-t border-line py-[14vh]">
+      <section id="demo" className="relative overflow-x-clip border-t border-line py-[9vh] lg:py-[14vh]">
         <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/3 h-[520px] w-[820px] -translate-x-1/3 rounded-full bg-[radial-gradient(closest-side,rgba(176,141,87,.22),transparent)]" />
         <div className="container-x relative">
           <SectionHead index="02" label="Демо" title="Сайт и CRM в одной связке" />
-          <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,9fr)] lg:gap-14">
+          <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,9fr)] lg:gap-14">
             <Reveal className="max-w-md">
-              <p data-stagger className="text-lg leading-relaxed text-ink-2">
+              <p data-stagger className="hidden text-lg leading-relaxed text-ink-2 lg:block">
                 Заявка с сайта сразу попадает менеджеру в Telegram и в CRM. Выберите отрасль и запустите показ или пройдите путь заявки сами.
               </p>
-              <div data-stagger role="group" aria-label="Отрасль макета" className="mt-7 flex flex-wrap gap-2">
+              <div data-stagger role="group" aria-label="Отрасль макета" className="flex flex-wrap gap-2 lg:mt-7">
                 {Object.values(PRESETS).map((p) => (
                   <button
                     key={p.id}
@@ -205,9 +205,10 @@ export function LiveDemo() {
                     data-goal="demo_preset"
                     data-goal-param={p.id}
                     onClick={() => reset(p.id)}
-                    className={`rounded-full border px-4 py-2 text-sm transition-colors ${presetId === p.id ? 'border-ink bg-ink text-paper' : 'border-ink/25 hover:border-ink/60'}`}
+                    className={`rounded-full border px-3.5 py-1.5 text-sm transition-colors lg:px-4 lg:py-2 ${presetId === p.id ? 'border-ink bg-ink text-paper' : 'border-ink/25 hover:border-ink/60'}`}
                   >
-                    {p.label}
+                    <span className="lg:hidden">{p.short}</span>
+                    <span className="hidden lg:inline">{p.label}</span>
                   </button>
                 ))}
               </div>
@@ -217,20 +218,20 @@ export function LiveDemo() {
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={playing ? stop : play}
-                className="mt-6 inline-flex items-center gap-3 rounded-full bg-ink px-8 py-4 text-xs uppercase tracking-[0.2em] text-paper"
+                className="mt-3 inline-flex w-full items-center justify-center gap-3 rounded-full bg-ink px-8 py-3.5 text-xs uppercase tracking-[0.2em] text-paper lg:mt-6 lg:w-auto lg:justify-start lg:py-4"
               >
                 <svg aria-hidden viewBox="0 0 12 12" className="h-3 w-3" fill="currentColor">{playing ? <rect x="1" y="1" width="10" height="10" rx="1.5" /> : <path d="M2 1l9 5-9 5z" />}</svg>
                 {playing ? 'Остановить показ' : 'Показать за 20 секунд'}
               </motion.button>
-              <p data-stagger className="mt-8 text-sm leading-relaxed text-mute">
+              <p data-stagger className="mt-8 hidden text-sm leading-relaxed text-mute lg:block">
                 Макет с вымышленными данными. CRM входит в тариф «Эталон», состав подгоняем под вашу задачу.
               </p>
-              <a href="#contact" data-stagger data-goal="demo_cta" onClick={() => window.dispatchEvent(new CustomEvent('pick-tariff', { detail: 'flagship' }))} className="mt-5 inline-block border-b border-ink pb-1 text-sm uppercase tracking-[0.2em]">
+              <a href="#contact" data-stagger data-goal="demo_cta" onClick={() => window.dispatchEvent(new CustomEvent('pick-tariff', { detail: 'flagship' }))} className="mt-5 hidden border-b border-ink pb-1 text-sm uppercase tracking-[0.2em] lg:inline-block">
                 Хочу так же →
               </a>
             </Reveal>
 
-            <div onPointerDownCapture={() => playing && stop()}>
+            <div className="min-w-0 touch-pan-y" onPointerDownCapture={() => playing && stop()}>
               <div className="overflow-hidden rounded-3xl border border-ink/20 bg-paper-2 shadow-[0_40px_100px_-40px_rgba(31,31,29,.55)] ring-1 ring-white/40">
                 <div className="flex items-center gap-3 bg-ink px-4 py-3 text-paper">
                   <span aria-hidden className="flex gap-1.5">
@@ -245,7 +246,7 @@ export function LiveDemo() {
                   <span className="hidden rounded-full border border-paper/30 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.2em] text-paper/70 sm:inline">макет</span>
                 </div>
 
-                <div className="relative h-[560px] sm:h-[520px]">
+                <div className="relative h-[clamp(440px,62svh,520px)] sm:h-[520px]">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div key={`${presetId}-${view}`} initial={{ opacity: 0, scale: 0.985 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.985 }} transition={{ duration: 0.28 }} className="absolute inset-0">
                       {view === 'site' && (
@@ -272,7 +273,7 @@ export function LiveDemo() {
                 </div>
               </div>
 
-              <div role="tablist" aria-label="Что показать" className="relative mx-auto mt-6 flex w-fit gap-1 rounded-full border border-ink/20 bg-paper p-1">
+              <div role="tablist" aria-label="Что показать" className="relative mx-auto mt-4 flex lg:mt-6 w-fit gap-1 rounded-full border border-ink/20 bg-paper p-1">
                 {TABS.map(([id, label]) => (
                   <button
                     key={id}
@@ -296,6 +297,9 @@ export function LiveDemo() {
                   </button>
                 ))}
               </div>
+              <a href="#contact" data-goal="demo_cta" onClick={() => window.dispatchEvent(new CustomEvent('pick-tariff', { detail: 'flagship' }))} className="mx-auto mt-4 block w-fit border-b border-ink pb-1 text-xs uppercase tracking-[0.2em] lg:hidden">
+                Хочу так же →
+              </a>
             </div>
           </div>
         </div>

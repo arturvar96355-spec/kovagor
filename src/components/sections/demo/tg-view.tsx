@@ -7,14 +7,14 @@ import { fmt, type Lead } from './data'
 /** Чат менеджера с ботом: новая заявка приходит сообщением, кнопка «Взять в работу» двигает карточку в CRM. */
 export function TgView({ leads, take, pay }: { leads: Lead[]; take: (id: number) => void; pay: (id: number) => void }) {
   const box = useRef<HTMLDivElement>(null)
-  const items = leads.filter((l) => l.source !== 'Звонок').sort((a, b) => a.id - b.id)
+  const items = leads.filter((l) => l.source !== 'Звонок').sort((a, b) => a.id - b.id).slice(-3)
 
   useEffect(() => {
     box.current?.scrollTo({ top: box.current.scrollHeight, behavior: 'smooth' })
   }, [items.length])
 
   return (
-    <div className="grid h-full place-items-center bg-[#dfe7ee] p-3 sm:p-5">
+    <div className="grid h-full place-items-center bg-[#dfe7ee] p-2 sm:p-5">
       <div className="flex h-full max-h-[470px] w-full max-w-[330px] flex-col overflow-hidden rounded-[28px] border-[6px] border-ink bg-[#f1f5f8] shadow-xl">
         <div className="flex items-center gap-3 bg-[#2b5278] px-4 py-3 text-white">
           <span aria-hidden className="grid h-9 w-9 place-items-center rounded-full bg-white/20 font-display text-lg">Л</span>

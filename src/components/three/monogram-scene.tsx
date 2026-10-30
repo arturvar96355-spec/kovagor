@@ -53,12 +53,18 @@ function buildGeometry() {
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t))
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
+const TAU = Math.PI * 2
+// Предельные скорости «догоняющей» позы: при быстром скролле/переходе монограмма плавно едет и крутится, а не мечется
+const MAX_TURN = 10 // рад/с
+const MAX_MOVE = 3.2 // доли половины экрана в секунду
+const MAX_SCALE = 1.6 // масштаб/с
 
 function Monogram({ onWarm }: { onWarm: () => void }) {
   const group = useRef<THREE.Group>(null)
   const frames = useRef(0)
   const mat = useRef<THREE.MeshPhysicalMaterial>(null)
   const spin = useRef(0) // инерционный довесок вращения от скорости скролла
+  const cur = useRef({ ...pose }) // сглаженная поза: догоняет pose (цель, её пишут GSAP/заставка) с ограничением скорости
   const geometry = useMemo(() => buildGeometry(), [])
 
   useFrame((state, dt) => {
@@ -80,28 +86,42 @@ function Monogram({ onWarm }: { onWarm: () => void }) {
     const intro = easeOutExpo(clamp((now - sceneInput.startAt) / 2.2, 0, 1))
     const k = 1 - Math.pow(0.001, dt) // коэффициент сглаживания, не зависящий от FPS
 
-    // скролл «раскручивает» монограмму, трение возвращает её обратно
-    spin.current += (clamp(sceneInput.vel / 4000, -1.2, 1.2) - spin.current) * (1 - Math.pow(0.02, dt))
+    // сглаженная поза. Целые «лишние» обороты отбрасываем сразу (лицо монограммы при этом не меняется),
+    // остальное догоняем с ограничением скорости — быстрый скролл по якорю больше не раскручивает логотип и не «швыряет» по экрану
+    const c = cur.current
+    const kp = 1 - Math.pow(0.0001, dt)
+    const step = (from: number, to: number, max: number) => from + clamp((to - from) * kp, -max * dt, max * dt)
+    const extra = Math.trunc((pose.ry - c.ry) / TAU)
+    if (extra !== 0) c.ry += extra * TAU
+    c.ry = step(c.ry, pose.ry, MAX_TURN)
+    c.rx = step(c.rx, pose.rx, MAX_TURN)
+    c.x = step(c.x, pose.x, MAX_MOVE)
+    c.y = step(c.y, pose.y, MAX_MOVE)
+    c.s = step(c.s, pose.s, MAX_SCALE)
+    c.tone = step(c.tone, pose.tone, 4)
+
+    // скролл «раскручивает» монограмму, трение возвращает её обратно (амплитуда ограничена)
+    spin.current += (clamp(sceneInput.vel / 4000, -0.6, 0.6) - spin.current) * (1 - Math.pow(0.02, dt))
 
     const sway = Math.sin(t * 0.55) * 0.22 // постоянный дрейф: блики скользят по граням
-    const targetY = pose.ry + sceneInput.px * 0.4 + sway + (1 - intro) * -1.1 + spin.current * 0.9
-    const targetX = pose.rx - sceneInput.py * 0.25 + spin.current * 0.25
+    const targetY = c.ry + sceneInput.px * 0.4 + sway + (1 - intro) * -1.1 + spin.current * 0.9
+    const targetX = c.rx - sceneInput.py * 0.25 + spin.current * 0.25
     g.rotation.y += (targetY - g.rotation.y) * k
     g.rotation.x += (targetX - g.rotation.x) * k
 
     // позиция: поза задаёт долю половины видимой области на плоскости z=0
     const v = state.viewport
-    const tx = pose.x * (v.width / 2) * 0.92
-    const ty = pose.y * (v.height / 2) * 0.92 + Math.sin(t * 0.8) * 0.06
+    const tx = c.x * (v.width / 2) * 0.92
+    const ty = c.y * (v.height / 2) * 0.92 + Math.sin(t * 0.8) * 0.06
     g.position.x += (tx - g.position.x) * k
     g.position.y += (ty - g.position.y) * k
 
     // масштаб привязан к высоте экрана, чтобы композиция не «плыла» при ресайзе
     const base = clamp(v.height / 4.01, 0.7, 1.4)
-    const sc = pose.s * base * (0.72 + 0.28 * intro)
+    const sc = c.s * base * (0.72 + 0.28 * intro)
     g.scale.setScalar(g.scale.x + (sc - g.scale.x) * k)
 
-    if (mat.current) mat.current.color.lerpColors(INK, IVORY, pose.tone)
+    if (mat.current) mat.current.color.lerpColors(INK, IVORY, c.tone)
   })
 
   return (

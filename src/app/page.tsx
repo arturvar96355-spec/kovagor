@@ -1,6 +1,6 @@
 import { Header } from '@/components/layout-header'
 import { ScrollProgress } from '@/components/motion/scroll-progress'
-import { GlobalScene } from '@/components/three/global-scene'
+import { ScenePoses } from '@/components/three/scene-poses'
 import { Hero } from '@/components/sections/hero'
 import { Manifesto } from '@/components/sections/manifesto'
 import { Marquee } from '@/components/motion/marquee'
@@ -23,7 +23,7 @@ export default function Home() {
       <JsonLd siteUrl={(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kovagor.ru').replace(/\/$/, '')} />
       <ScrollProgress />
       <Header />
-      <GlobalScene />
+      <ScenePoses />
       <main id="top">
         <Hero />
         <Manifesto />

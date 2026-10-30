@@ -50,7 +50,7 @@ export function CrmView(props: {
         </button>
       </aside>
 
-      <div className="min-w-0 flex-1 overflow-y-auto p-3 sm:p-5">
+      <div className="min-w-0 flex-1 overflow-y-auto p-2.5 sm:p-5">
         <div role="tablist" aria-label="Раздел CRM" className="mb-3 flex items-center gap-1 sm:hidden">
           {NAV.map(([id, label]) => (
             <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`rounded-full px-3 py-1.5 text-xs ${tab === id ? 'bg-paper text-ink' : 'bg-paper/10 text-paper/70'}`}>
@@ -96,8 +96,8 @@ export function CrmView(props: {
                                 {fresh === l.id && <span className="absolute -right-1 -top-1 rounded-full bg-[#2b7a4b] px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-white">новая</span>}
                                 <span className="block truncate text-sm font-medium">{l.name}</span>
                                 <span className="block truncate text-[11px] text-mute">{l.service}</span>
-                                <span className="mt-1 flex items-center justify-between text-xs">
-                                  <span>{fmt(l.sum)} ₽</span>
+                                <span className="mt-1 flex flex-col text-xs sm:flex-row sm:items-center sm:justify-between">
+                                  <span className="whitespace-nowrap">{fmt(l.sum)} ₽</span>
                                   <span className="text-[10px] text-mute">{l.source}</span>
                                 </span>
                               </button>
@@ -109,7 +109,7 @@ export function CrmView(props: {
                   ))}
                 </div>
               </LayoutGroup>
-              <p className="mt-3 text-xs text-paper/60">Перетащите карточку на другой этап или нажмите на неё, чтобы открыть сделку.</p>
+              <p className="mt-3 hidden text-xs text-paper/60 sm:block">Перетащите карточку на другой этап или нажмите на неё, чтобы открыть сделку.</p>
             </motion.div>
           )}
 
@@ -155,18 +155,18 @@ export function CrmView(props: {
                   </div>
                 ))}
               </dl>
-              <div className="rounded-2xl bg-paper/[0.06] p-4">
+              <div className="rounded-2xl bg-paper/[0.06] p-3 sm:p-4">
                 <p className="mb-2 text-[11px] uppercase tracking-[0.15em] text-paper/60">Выручка за неделю, тыс. ₽</p>
-                <svg viewBox="0 0 600 90" className="h-24 w-full" fill="none" aria-hidden>
+                <svg viewBox="0 0 600 90" className="h-14 w-full sm:h-24" fill="none" aria-hidden>
                   <motion.path d={spark} stroke="#f4f1ea" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.3, ease: 'easeInOut' }} />
                   {WEEK.map((v, i) => (
                     <motion.circle key={i} cx={(i / (WEEK.length - 1)) * 600} cy={80 - (v / 18) * 70} r="5" fill="#f4f1ea" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.15 * i + 0.3 }} />
                   ))}
                 </svg>
               </div>
-              <div className="rounded-2xl bg-paper/[0.06] p-4">
-                <p className="mb-3 text-[11px] uppercase tracking-[0.15em] text-paper/60">Заявки по каналам</p>
-                <ul className="space-y-3">
+              <div className="rounded-2xl bg-paper/[0.06] p-3 sm:p-4">
+                <p className="mb-2 sm:mb-3 text-[11px] uppercase tracking-[0.15em] text-paper/60">Заявки по каналам</p>
+                <ul className="space-y-2 sm:space-y-3">
                   {bySource.map((b) => (
                     <li key={b.s} className="flex items-center gap-3 text-sm">
                       <span className="w-20 shrink-0 text-paper/80">{b.s}</span>
@@ -192,7 +192,7 @@ export function CrmView(props: {
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 34 }}
             aria-label={`Сделка: ${open.name}`}
-            className="absolute inset-y-0 right-0 z-10 flex w-full max-w-[300px] flex-col gap-4 overflow-y-auto border-l border-paper/15 bg-[#26262a] p-5 shadow-2xl"
+            className="absolute inset-y-0 right-0 z-10 flex w-full flex-col gap-3 sm:max-w-[300px] sm:gap-4 overflow-y-auto border-l border-paper/15 bg-[#26262a] p-4 shadow-2xl sm:p-5"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -222,7 +222,7 @@ export function CrmView(props: {
             </div>
             <label className="block">
               <span className="mb-2 block text-[11px] uppercase tracking-[0.15em] text-paper/50">Заметка</span>
-              <textarea value={open.note} onChange={(e) => setNote(open.id, e.target.value)} rows={3} placeholder="Например: просила перезвонить" className="w-full rounded-xl border border-paper/20 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-paper/40 focus:border-paper/60" />
+              <textarea value={open.note} onChange={(e) => setNote(open.id, e.target.value)} rows={2} placeholder="Например: просила перезвонить" className="w-full rounded-xl border border-paper/20 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-paper/40 focus:border-paper/60" />
             </label>
             <p className="mt-auto text-xs text-paper/50">Поступила: {open.at}</p>
           </motion.aside>
