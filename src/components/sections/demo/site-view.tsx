@@ -224,7 +224,7 @@ export function SiteView(props: {
                   noValidate
                 >
                   <fieldset>
-                    <legend className="mb-2 text-[11px] uppercase tracking-[0.3em] text-[var(--soft)]">{preset.catalog}</legend>
+                    <legend className="sr-only sm:not-sr-only sm:mb-2 sm:text-[11px] sm:uppercase sm:tracking-[0.3em] sm:text-[var(--soft)]">{preset.catalog}</legend>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {preset.services.map((s) => (
                         <button key={s.id} type="button" aria-pressed={form.service === s.id} onClick={() => set({ service: s.id })} className={`max-w-[62%] truncate border px-3 py-1.5 text-xs transition-colors sm:max-w-none sm:px-4 sm:py-2 sm:text-sm rounded-[var(--pill)] ${form.service === s.id ? sel : idle}`}>
