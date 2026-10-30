@@ -5,6 +5,8 @@ export type Lead = { id: number; name: string; contact: string; service: string;
 export type Form = { name: string; contact: string; service: string; slot: string }
 export type Service = { id: string; name: string; price: number; text: string }
 export type PresetId = 'salon' | 'clinic' | 'shop'
+/** Оформление макета сайта: у каждой отрасли свой дизайн (цвета, форма, шрифт), а не только другие тексты. */
+export type Theme = { bg: string; surface: string; ink: string; soft: string; line: string; accent: string; on: string; radius: string; pill: string; head: string }
 
 export type Preset = {
   id: PresetId
@@ -21,6 +23,8 @@ export type Preset = {
   book: string
   slotsTitle: string
   blobs: [string, string]
+  theme: Theme
+  crmAccent: string
   services: Service[]
   seed: Lead[]
   incoming: { name: string; contact: string; service: string; source: Source }[]
@@ -35,7 +39,9 @@ export const PRESETS: Record<PresetId, Preset> = {
     id: 'salon', label: 'Салон красоты', short: 'Салон', brand: 'Лён', domain: 'len.example', kicker: 'Студия красоты · макет',
     title: 'Стрижка, которую хочется показывать', text: 'Выберите услугу, время и запишитесь за минуту. Напомним за день.',
     tags: ['Ежедневно 10–21', 'Онлайн-запись', 'Напоминания в Telegram'], action: 'Записаться', catalog: 'Услуги', book: 'Запись', slotsTitle: 'Время сегодня',
-    blobs: ['#e8d9c1', '#d9e2d6'], playName: 'Алина', playService: 'color',
+    blobs: ['#e8d9c1', '#d9e2d6'], crmAccent: '#c9a66b',
+    theme: { bg: '#ece5d6', surface: '#f7f3ea', ink: '#1f1f1d', soft: '#5b574f', line: 'rgba(31,31,29,.18)', accent: '#1f1f1d', on: '#f4f1ea', radius: '0.75rem', pill: '9999px', head: 'font-display' },
+    playName: 'Алина', playService: 'color',
     services: [
       { id: 'cut', name: 'Стрижка', price: 1800, text: 'Подбор формы и укладка' },
       { id: 'color', name: 'Окрашивание', price: 4500, text: 'Цвет под ваш тон' },
@@ -59,7 +65,9 @@ export const PRESETS: Record<PresetId, Preset> = {
     id: 'clinic', label: 'Клиника', short: 'Клиника', brand: 'Ясный приём', domain: 'yasny.example', kicker: 'Частная клиника · макет',
     title: 'Запись к врачу за минуту', text: 'Выберите услугу и время, администратор подтвердит запись и напомнит о приёме.',
     tags: ['Ежедневно 8–20', 'Онлайн-запись', 'Напоминание о приёме'], action: 'Записаться', catalog: 'Услуги', book: 'Запись', slotsTitle: 'Приём сегодня',
-    blobs: ['#d6e4f0', '#dff0e6'], playName: 'Елена', playService: 'ultra',
+    blobs: ['#d6e4f0', '#dff0e6'], crmAccent: '#5aa0e6',
+    theme: { bg: '#f2f7fb', surface: '#ffffff', ink: '#12324a', soft: '#4a6378', line: '#d3e1ec', accent: '#2f6fb3', on: '#ffffff', radius: '0.6rem', pill: '0.7rem', head: 'font-sans font-semibold tracking-tight' },
+    playName: 'Елена', playService: 'ultra',
     services: [
       { id: 'ther', name: 'Консультация терапевта', price: 1500, text: 'Осмотр и план обследования' },
       { id: 'ultra', name: 'УЗИ', price: 2200, text: 'Без долгого ожидания' },
@@ -83,7 +91,9 @@ export const PRESETS: Record<PresetId, Preset> = {
     id: 'shop', label: 'Магазин цветов', short: 'Цветы', brand: 'Лепесток', domain: 'lepestok.example', kicker: 'Цветочная мастерская · макет',
     title: 'Цветы с доставкой к нужному часу', text: 'Соберите букет и выберите время доставки. Подтвердим заказ в Telegram.',
     tags: ['Доставка по городу', 'Свежие поставки', 'Открытка в подарок'], action: 'Заказать', catalog: 'Каталог', book: 'Заказ', slotsTitle: 'Доставка сегодня',
-    blobs: ['#f1d9de', '#e2ead3'], playName: 'Дарья', playService: 'mix',
+    blobs: ['#f1d9de', '#e2ead3'], crmAccent: '#ee86a6',
+    theme: { bg: '#fdeef0', surface: '#fff8f8', ink: '#3b2230', soft: '#7a5566', line: '#f1cdd5', accent: '#c2476a', on: '#ffffff', radius: '1.5rem', pill: '9999px', head: 'font-display italic' },
+    playName: 'Дарья', playService: 'mix',
     services: [
       { id: 'mono', name: 'Монобукет', price: 2200, text: 'Один сорт, много характера' },
       { id: 'mix', name: 'Букет-микс', price: 3200, text: 'Сезонные цветы и зелень' },

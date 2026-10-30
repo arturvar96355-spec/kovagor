@@ -189,7 +189,7 @@ export function LiveDemo() {
   return (
     <MotionConfig reducedMotion="user">
       <section id="demo" className="relative overflow-x-clip border-t border-line py-[9vh] lg:py-[14vh]">
-        <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/3 h-[520px] w-[820px] -translate-x-1/3 rounded-full bg-[radial-gradient(closest-side,rgba(176,141,87,.22),transparent)]" />
+        <span aria-hidden className="pointer-events-none absolute left-1/2 top-1/3 h-[520px] w-[820px] -translate-x-1/3 rounded-full transition-[background] duration-700" style={{ background: `radial-gradient(closest-side, ${preset.crmAccent}40, transparent)` }} />
         <div className="container-x relative">
           <SectionHead index="02" label="Демо" title="Сайт и CRM в одной связке" />
           <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,9fr)] lg:gap-14">
@@ -253,7 +253,7 @@ export function LiveDemo() {
                         <SiteView preset={preset} page={page} setPage={setPage} form={form} setForm={setForm} onSubmit={() => submit(form)} error={error} sentId={sentId} goCrm={() => go('crm')} goTg={() => go('tg')} submitRef={submitRef} />
                       )}
                       {view === 'tg' && <TgView leads={leads} take={(id) => setStage(id, 'work')} pay={(id) => setStage(id, 'paid')} />}
-                      {view === 'crm' && <CrmView brand={preset.brand} leads={leads} fresh={fresh} tab={crmTab} setTab={setCrmTab} setStage={setStage} setNote={setNote} addIncoming={addIncoming} openId={openId} setOpenId={setOpenId} uid={uid} />}
+                      {view === 'crm' && <CrmView brand={preset.brand} accent={preset.crmAccent} leads={leads} fresh={fresh} tab={crmTab} setTab={setCrmTab} setStage={setStage} setNote={setNote} addIncoming={addIncoming} openId={openId} setOpenId={setOpenId} uid={uid} />}
                     </motion.div>
                   </AnimatePresence>
                   <AnimatePresence>

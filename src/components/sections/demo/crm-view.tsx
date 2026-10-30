@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
 import { Counter } from './counter'
 import { SOURCES_LIST, WEEK, STAGES, fmt, type Lead, type Stage } from './data'
@@ -12,6 +12,7 @@ const SPRING = { type: 'spring', stiffness: 380, damping: 34 } as const
 /** CRM-макет: канбан с перетаскиванием, карточка сделки, клиенты с поиском и дашборд с анимированными цифрами. */
 export function CrmView(props: {
   brand: string
+  accent: string
   leads: Lead[]
   fresh: number | null
   tab: CrmTab
@@ -23,7 +24,7 @@ export function CrmView(props: {
   setOpenId: (id: number | null) => void
   uid: string
 }) {
-  const { brand, leads, fresh, tab, setTab, setStage, setNote, addIncoming, openId, setOpenId, uid } = props
+  const { brand, accent, leads, fresh, tab, setTab, setStage, setNote, addIncoming, openId, setOpenId, uid } = props
   const [dragId, setDragId] = useState<number | null>(null)
   const [over, setOver] = useState<Stage | null>(null)
   const [q, setQ] = useState('')
@@ -37,11 +38,11 @@ export function CrmView(props: {
   const clients = leads.filter((l) => (l.name + l.contact + l.service).toLowerCase().includes(q.toLowerCase()))
 
   return (
-    <div className="relative flex h-full bg-ink text-paper">
+    <div style={{ '--accent': accent } as CSSProperties} className="relative flex h-full bg-ink text-paper">
       <aside className="hidden w-40 shrink-0 flex-col gap-1 border-r border-paper/10 p-4 text-sm sm:flex">
         <span className="mb-4 font-display text-lg">{brand} · CRM</span>
         {NAV.map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} aria-current={tab === id ? 'page' : undefined} className="rounded-lg px-3 py-2 text-left text-paper/60 transition-colors hover:text-paper aria-[current=page]:bg-paper/10 aria-[current=page]:text-paper">
+          <button key={id} onClick={() => setTab(id)} aria-current={tab === id ? 'page' : undefined} className="rounded-lg px-3 py-2 text-left text-paper/60 transition-colors hover:text-paper aria-[current=page]:bg-paper/10 aria-[current=page]:text-[var(--accent)]">
             {label}
           </button>
         ))}
@@ -53,7 +54,7 @@ export function CrmView(props: {
       <div className="min-w-0 flex-1 overflow-y-auto p-2.5 sm:p-5">
         <div role="tablist" aria-label="Раздел CRM" className="mb-3 flex items-center gap-1 sm:hidden">
           {NAV.map(([id, label]) => (
-            <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`rounded-full px-3 py-1.5 text-xs ${tab === id ? 'bg-paper text-ink' : 'bg-paper/10 text-paper/70'}`}>
+            <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`rounded-full px-3 py-1.5 text-xs ${tab === id ? 'bg-[var(--accent)] text-ink' : 'bg-paper/10 text-paper/70'}`}>
               {label}
             </button>
           ))}
@@ -91,9 +92,9 @@ export function CrmView(props: {
                               <button
                                 onClick={() => setOpenId(l.id)}
                                 aria-label={`Открыть сделку: ${l.name}, ${l.service}, ${fmt(l.sum)} ₽`}
-                                className={`relative w-full cursor-grab rounded-xl bg-paper p-2.5 text-left text-ink transition-transform hover:-translate-y-0.5 sm:p-3 ${fresh === l.id ? 'ring-2 ring-[#9be3b4]' : ''}`}
+                                className={`relative w-full cursor-grab rounded-xl bg-paper p-2.5 text-left text-ink transition-transform hover:-translate-y-0.5 sm:p-3 ${fresh === l.id ? 'ring-2 ring-[var(--accent)]' : ''}`}
                               >
-                                {fresh === l.id && <span className="absolute -right-1 -top-1 rounded-full bg-[#2b7a4b] px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-white">новая</span>}
+                                {fresh === l.id && <span className="absolute -right-1 -top-1 rounded-full bg-[var(--accent)] px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-ink">новая</span>}
                                 <span className="block truncate text-sm font-medium">{l.name}</span>
                                 <span className="block truncate text-[11px] text-mute">{l.service}</span>
                                 <span className="mt-1 flex flex-col text-xs sm:flex-row sm:items-center sm:justify-between">
@@ -158,9 +159,9 @@ export function CrmView(props: {
               <div className="rounded-2xl bg-paper/[0.06] p-3 sm:p-4">
                 <p className="mb-2 text-[11px] uppercase tracking-[0.15em] text-paper/60">Выручка за неделю, тыс. ₽</p>
                 <svg viewBox="0 0 600 90" className="h-14 w-full sm:h-24" fill="none" aria-hidden>
-                  <motion.path d={spark} stroke="#f4f1ea" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.3, ease: 'easeInOut' }} />
+                  <motion.path d={spark} stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.3, ease: 'easeInOut' }} />
                   {WEEK.map((v, i) => (
-                    <motion.circle key={i} cx={(i / (WEEK.length - 1)) * 600} cy={80 - (v / 18) * 70} r="5" fill="#f4f1ea" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.15 * i + 0.3 }} />
+                    <motion.circle key={i} cx={(i / (WEEK.length - 1)) * 600} cy={80 - (v / 18) * 70} r="5" fill="var(--accent)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.15 * i + 0.3 }} />
                   ))}
                 </svg>
               </div>
@@ -171,7 +172,7 @@ export function CrmView(props: {
                     <li key={b.s} className="flex items-center gap-3 text-sm">
                       <span className="w-20 shrink-0 text-paper/80">{b.s}</span>
                       <span className="h-2 flex-1 overflow-hidden rounded-full bg-paper/10">
-                        <motion.span className="block h-full origin-left rounded-full bg-paper" initial={{ scaleX: 0 }} animate={{ scaleX: b.n / max }} transition={SPRING} />
+                        <motion.span className="block h-full origin-left rounded-full bg-[var(--accent)]" initial={{ scaleX: 0 }} animate={{ scaleX: b.n / max }} transition={SPRING} />
                       </span>
                       <span className="w-5 text-right">{b.n}</span>
                     </li>
@@ -214,7 +215,7 @@ export function CrmView(props: {
               <div className="grid grid-cols-3 gap-1 rounded-full bg-paper/10 p-1 text-xs">
                 {STAGES.map((st) => (
                   <button key={st.id} onClick={() => setStage(open.id, st.id)} aria-pressed={open.stage === st.id} className="relative rounded-full px-2 py-1.5 transition-colors aria-pressed:text-ink">
-                    {open.stage === st.id && <motion.span layoutId={`${uid}-stage`} className="absolute inset-0 rounded-full bg-paper" transition={SPRING} />}
+                    {open.stage === st.id && <motion.span layoutId={`${uid}-stage`} className="absolute inset-0 rounded-full bg-[var(--accent)]" transition={SPRING} />}
                     <span className="relative">{st.title}</span>
                   </button>
                 ))}
